@@ -36,6 +36,15 @@ public class DalamudApi
     [PluginService]
     public static IGameConfig GameConfig { get; private set; }
 
+    [PluginService]
+    public static IKeyState KeyState { get; private set; }
+
+    [PluginService]
+    public static IToastGui ToastGui { get; private set; }
+
+    [PluginService]
+    public static IGameGui GameGui { get; private set; }
+
     #endregion
 
     private static PluginCommandManager<IDalamudPlugin> pluginCommandManager;
