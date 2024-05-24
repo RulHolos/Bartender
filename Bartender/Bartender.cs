@@ -89,6 +89,24 @@ public unsafe class Bartender : IDalamudPlugin
         ProfileConfig? profile = Configuration.ProfileConfigs.Find(profile => profile.Name == arguments);
         if (profile == null)
             DalamudApi.ChatGui.PrintError($"The profile '{arguments}' does not exist.");
+        BarControl(profile!, false);
+    }
+
+    [Command("/barclear")]
+    [HelpMessage("Clears a bar profile (meant for macros). Usage: /barclear <profile name>")]
+    public void BarClear(string command, string arguments)
+    {
+        if (arguments.IsNullOrEmpty())
+            DalamudApi.ChatGui.PrintError("Wrong arguments. Usage: /barclear <profile name>");
+
+        ProfileConfig? profile = Configuration.ProfileConfigs.Find(profile => profile.Name == arguments);
+        if (profile == null)
+            DalamudApi.ChatGui.PrintError($"The profile '{arguments}' does not exist.");
+        BarControl(profile!, true);
+    }
+
+    private void BarControl(ProfileConfig profile, bool clear)
+    {
         for (int i = 0; i < 10; i++)
         {
             BarNums flag = (BarNums)(1 << i);
@@ -99,7 +117,10 @@ public unsafe class Bartender : IDalamudPlugin
             for (uint slot = 0; slot < NUM_OF_SLOTS; slot++)
             {
                 HotBarSlot* gameSlot = RaptureHotbar->GetSlotById(Convert.ToUInt32(i), slot);
-                gameSlot->Set(slots[slot].CommandType, slots[slot].CommandId);
+                if (clear)
+                    gameSlot->Set(HotbarSlotType.Empty, 0);
+                else
+                    gameSlot->Set(slots[slot].CommandType, slots[slot].CommandId);
                 RaptureHotbar->WriteSavedSlot(RaptureHotbar->ActiveHotbarClassJobId, Convert.ToUInt32(i), slot, gameSlot, false, DalamudApi.ClientState.IsPvP);
             }
         }

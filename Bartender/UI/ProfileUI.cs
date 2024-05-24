@@ -58,8 +58,14 @@ public class ProfileUI : IDisposable
             Bartender.Plugin.BarLoad("/barload", profile.Name);
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip($"Executes '/barload {profile.Name}'");
-        ImGui.SameLine();
+        
+
         if (ImGui.Button("Revert to game")) { }
+        ImGui.SameLine();
+        if (ImGui.Button("Clear profile's hotbars"))
+            Bartender.Plugin.BarClear("/barclear", profile.Name);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip($"Executes '/barclear {profile.Name}'");
 
         ImGui.Spacing();
     }
@@ -86,7 +92,13 @@ public class ProfileUI : IDisposable
             }
         }
         Bartender.Configuration.Save();
-        //DalamudApi.PluginInterface.
+        DalamudApi.NotificationManager.AddNotification(new Dalamud.Interface.ImGuiNotification.Notification()
+        {
+            Content = $"Profil saved: {Config.Name}",
+            Type = Dalamud.Interface.Internal.Notifications.NotificationType.Success,
+            Minimized = false,
+            InitialDuration = TimeSpan.FromSeconds(3)
+        });
     }
 
     public void Dispose()
