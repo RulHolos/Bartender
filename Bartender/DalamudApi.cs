@@ -48,6 +48,9 @@ public class DalamudApi
     [PluginService]
     public static INotificationManager NotificationManager { get; private set; }
 
+    [PluginService]
+    public static IGameInteropProvider GameInteropProvider { get; private set; }
+
     #endregion
 
     private static PluginCommandManager<IDalamudPlugin> pluginCommandManager;

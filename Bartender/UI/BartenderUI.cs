@@ -78,12 +78,6 @@ public class BartenderUI : IDisposable
                 DrawProfiles();
                 ImGui.EndTabItem();
             }
-            if (ImGui.BeginTabItem("Automation"))
-            {
-                // Automation for loading bars at startup, on ATH change (allowing for multiple ATH to have different icons configurations)
-                // Profiles
-                ImGui.EndTabItem();
-            }
             if (ImGui.BeginTabItem("Settings"))
             {
                 DrawSettings();
@@ -91,6 +85,7 @@ public class BartenderUI : IDisposable
             }
             if (ImGui.BeginTabItem("Debug"))
             {
+                DrawDebug();
                 ImGui.EndTabItem();
             }
 
@@ -222,6 +217,16 @@ public class BartenderUI : IDisposable
     {
         if (ImGui.Checkbox("Export on Delete", ref Bartender.Configuration.ExportOnDelete))
             Bartender.Configuration.Save();
+    }
+
+    private void DrawDebug()
+    {
+        ImGui.TextUnformatted("Addon Config (HUD Layout #)");
+        ImGui.NextColumn();
+        ImGui.Text($"{Game.addonConfig:X}");
+        ImGui.NextColumn();
+        ImGui.TextUnformatted($"{Game.CurrentHUDLayout}");
+        ImGui.NextColumn();
     }
 
     private void AddProfile(ProfileConfig cfg)

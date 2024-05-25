@@ -11,16 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="images\icon.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="..\Data\goat.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
     <Content Include="images\icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Visible>false</Visible>
     </Content>
   </ItemGroup>
 </Project>

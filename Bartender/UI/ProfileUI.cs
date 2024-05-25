@@ -67,7 +67,16 @@ public class ProfileUI : IDisposable
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip($"Executes '/barclear {profile.Name}'");
 
+        /*
         ImGui.Spacing();
+        ImGui.Separator();
+
+        if (ImGui.Checkbox("Load on HUD Layout change", ref profile.OnHUDChange))
+            Bartender.Configuration.Save();
+        ImGui.SameLine();
+        if (ImGui.SliderInt("##HUDLayout", ref profile.HUDLayout, 1, 4))
+            Bartender.Configuration.Save();
+        */
     }
 
     private void CheckboxFlags(string label, BarNums flags)

@@ -24,6 +24,8 @@ public class ProfileConfig
     [JsonProperty("hotkey")][DefaultValue(0)] public int Hotkey = 0;
     [JsonProperty("hotbars")][DefaultValue(0)] public BarNums UsedBars = BarNums.None;
     [JsonProperty("slots")][DefaultValue(null)] public HotbarSlot[,] Slots = new HotbarSlot[Bartender.NUM_OF_BARS, Bartender.NUM_OF_SLOTS];
+    [JsonProperty("onHUDChange")][DefaultValue(false)] public bool OnHUDChange = false;
+    [JsonProperty("HUDLayout")][DefaultValue(0)] public int HUDLayout = 1;
 
     [Flags]
     public enum BarNums
@@ -53,6 +55,12 @@ public class ProfileConfig
         }
         return rowArray;
     }
+}
+
+public class ConditionConfig
+{
+    [JsonProperty("arg")][DefaultValue(0)] public dynamic Arg = 0;
+    [JsonProperty("negate")][DefaultValue(false)] public bool Negate = false;
 }
 
 public class Configuration : IPluginConfiguration

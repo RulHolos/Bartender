@@ -54,6 +54,9 @@ public unsafe class Bartender : IDalamudPlugin
     {
         try
         {
+            Game.Initialize();
+            ConditionManager.Initialize();
+
             isPluginReady = true;
         }
         catch (Exception e)
