@@ -16,6 +16,9 @@ using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using System.Text.RegularExpressions;
 using static Bartender.ProfileConfig;
+using FFXIVClientStructs.FFXIV.Client.UI;
+using Bartender.UI.Utils;
+using Dalamud.Interface.Windowing;
 
 namespace Bartender;
 
@@ -24,11 +27,15 @@ public unsafe class Bartender : IDalamudPlugin
     public const int NUM_OF_BARS = 10;
     public const int NUM_OF_SLOTS = 12;
 
-    public static Bartender Plugin { get; private set; }
-    public static Configuration Configuration { get; private set; }
+    public static Bartender? Plugin { get; private set; }
+    public static Configuration? Configuration { get; private set; }
+    public static IconManager? IconManager { get; private set; }
+    public static Game? Game { get; private set; }
 
     public BartenderUI UI;
     private bool isPluginReady = false;
+
+    public readonly WindowSystem WindowSystem = new("Bartender");
 
     public static RaptureHotbarModule* RaptureHotbar { get; private set; } = Framework.Instance()->UIModule->GetRaptureHotbarModule();
 
@@ -37,15 +44,27 @@ public unsafe class Bartender : IDalamudPlugin
         Plugin = this;
         DalamudApi.Initialize(this, pluginInterface);
 
-        Configuration = (Configuration)DalamudApi.PluginInterface.GetPluginConfig() ?? new();
+        IpcProvider.Init();
+
+        Configuration = DalamudApi.PluginInterface.GetPluginConfig() as Configuration ?? new();
         Configuration.Initialize();
         Configuration.UpdateVersion();
 
+        IconManager = new();
+        Game = new();
+
         DalamudApi.Framework.Update += Update;
 
-        UI = new BartenderUI();
-        DalamudApi.PluginInterface.UiBuilder.OpenConfigUi += ToggleConfig;
+        UI = new BartenderUI() {
+#if DEBUG
+            IsOpen = true,
+#endif
+        };
+
+        WindowSystem.AddWindow(UI);
+
         DalamudApi.PluginInterface.UiBuilder.Draw += Draw;
+        DalamudApi.PluginInterface.UiBuilder.OpenConfigUi += ToggleConfig;
 
         ReadyPlugin();
     }
@@ -61,21 +80,20 @@ public unsafe class Bartender : IDalamudPlugin
         }
         catch (Exception e)
         {
-            PluginLog.Error($"Failed to load Bartender.\n{e}");
+            DalamudApi.PluginLog.Error($"Failed to load Bartender.\n{e}");
         }
     }
 
     public void Reload()
     {
-        Configuration = (Configuration)DalamudApi.PluginInterface.GetPluginConfig() ?? new();
+        Configuration = DalamudApi.PluginInterface.GetPluginConfig() as Configuration ?? new();
         Configuration.Initialize();
         Configuration.UpdateVersion();
         Configuration.Save();
         UI.Reload();
-        DalamudApi.ChatGui.Print("plugin reload.");
     }
 
-    public void ToggleConfig() => UI.ToggleConfig();
+    public void ToggleConfig() => UI.Toggle();
 
     #region Commands
     [Command("/bartender")]
@@ -89,7 +107,7 @@ public unsafe class Bartender : IDalamudPlugin
         if (arguments.IsNullOrEmpty())
             DalamudApi.ChatGui.PrintError("Wrong arguments. Usage: /barload <profile name>");
 
-        ProfileConfig? profile = Configuration.ProfileConfigs.Find(profile => profile.Name == arguments);
+        ProfileConfig? profile = Configuration!.ProfileConfigs.Find(profile => profile.Name == arguments);
         if (profile == null)
             DalamudApi.ChatGui.PrintError($"The profile '{arguments}' does not exist.");
         BarControl(profile!, false);
@@ -102,7 +120,7 @@ public unsafe class Bartender : IDalamudPlugin
         if (arguments.IsNullOrEmpty())
             DalamudApi.ChatGui.PrintError("Wrong arguments. Usage: /barclear <profile name>");
 
-        ProfileConfig? profile = Configuration.ProfileConfigs.Find(profile => profile.Name == arguments);
+        ProfileConfig? profile = Configuration!.ProfileConfigs.Find(profile => profile.Name == arguments);
         if (profile == null)
             DalamudApi.ChatGui.PrintError($"The profile '{arguments}' does not exist.");
         BarControl(profile!, true);
@@ -130,8 +148,6 @@ public unsafe class Bartender : IDalamudPlugin
     }
     #endregion
 
-    //public static bool IsLoggedIn() => ConditionManager.CheckCondition("1");
-
     public static float RunTime => (float)DalamudApi.PluginInterface.LoadTimeDelta.TotalSeconds;
     public static long FrameCount => (long)DalamudApi.PluginInterface.UiBuilder.FrameCount;
 
@@ -146,20 +162,23 @@ public unsafe class Bartender : IDalamudPlugin
     {
         if (!isPluginReady) return;
 
-        UI.Draw();
+        WindowSystem.Draw();
     }
 
     protected virtual void Dispose(bool disposing)
     {
         if (!disposing) return;
 
-        Configuration.Save();
+        IpcProvider.DeInit();
+
+        Configuration!.Save();
 
         DalamudApi.Framework.Update -= Update;
         DalamudApi.PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfig;
 
         DalamudApi.Dispose();
 
+        IconManager!.Dispose();
         UI.Dispose();
     }
 

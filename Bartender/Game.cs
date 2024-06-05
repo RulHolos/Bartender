@@ -1,11 +1,10 @@
 using Dalamud.Utility.Signatures;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Action = Lumina.Excel.GeneratedSheets.Action;
 
 namespace Bartender;
 
@@ -25,5 +24,18 @@ public unsafe class Game
         addonConfig = ((delegate* unmanaged<UIModule*, nint>)uiModule->vfunc[19])(uiModule);
 
         DalamudApi.GameInteropProvider.InitializeFromAttributes(new Game());
+    }
+
+    private readonly Dictionary<uint, Action?> actionCache = [];
+
+    public Action? GetAction(uint actionId)
+    {
+        var adjustedActionId = ActionManager.Instance()->GetAdjustedActionId(actionId);
+
+        if (actionCache.TryGetValue(adjustedActionId, out var action)) return action;
+
+        action = DalamudApi.DataManager.GetExcelSheet<Action>()!.GetRow(adjustedActionId);
+        actionCache.Add(adjustedActionId, action);
+        return action;
     }
 }

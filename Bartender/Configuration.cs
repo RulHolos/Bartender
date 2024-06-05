@@ -9,15 +9,20 @@ using Dalamud.Configuration;
 using Dalamud.Interface.Utility;
 using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using System.Text;
+using System.IO.Compression;
 
 namespace Bartender;
 
-public struct HotbarSlot(uint id, HotbarSlotType type)
+public struct HotbarSlot(uint id, HotbarSlotType type, int icon, string name)
 {
+    public string Name = name;
     public uint CommandId = id;
     public HotbarSlotType CommandType = type;
+    public int Icon = icon;
 }
 
+[Serializable]
 public class ProfileConfig
 {
     [JsonProperty("name")][DefaultValue("")] public string Name = string.Empty;
@@ -26,6 +31,9 @@ public class ProfileConfig
     [JsonProperty("slots")][DefaultValue(null)] public HotbarSlot[,] Slots = new HotbarSlot[Bartender.NUM_OF_BARS, Bartender.NUM_OF_SLOTS];
     [JsonProperty("onHUDChange")][DefaultValue(false)] public bool OnHUDChange = false;
     [JsonProperty("HUDLayout")][DefaultValue(0)] public int HUDLayout = 1;
+    [JsonProperty("format")][DefaultValue(0)] public int format = 0;
+    [JsonProperty("condset")][DefaultValue(-1)] public int ConditionSet = -1;
+    [JsonIgnore] public BarFormat Format = BarFormat.Default;
 
     [Flags]
     public enum BarNums
@@ -43,6 +51,14 @@ public class ProfileConfig
         Ten = 1 << 9
     }
 
+    public struct BarFormat
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        public static BarFormat Default => new BarFormat() { X = Bartender.NUM_OF_SLOTS, Y = 1 };
+    }
+
     public HotbarSlot[] GetRow(int rowIndex)
     {
         if (rowIndex < 0 || rowIndex >= Slots.GetLength(0))
@@ -55,12 +71,68 @@ public class ProfileConfig
         }
         return rowArray;
     }
+
+    public static string ToBase64(ProfileConfig conf)
+    {
+        string seri = JsonConvert.SerializeObject(conf);
+        var bytes = Encoding.UTF8.GetBytes(seri);
+        using var ms = new MemoryStream();
+        using (var gs = new GZipStream(ms, CompressionMode.Compress))
+            gs.Write(bytes, 0, bytes.Length);
+        return Convert.ToBase64String(ms.ToArray());
+    }
+
+    public static ProfileConfig? FromBase64(string s)
+    {
+        var data = Convert.FromBase64String(s);
+        using var ms = new MemoryStream(data);
+        using var gs = new GZipStream(ms, CompressionMode.Decompress);
+        using var r = new StreamReader(gs);
+        string confJson = r.ReadToEnd();
+        
+        ProfileConfig? config;
+        try { config = JsonConvert.DeserializeObject<ProfileConfig>(confJson); }
+        catch { config = null; }
+        return config;
+    }
 }
 
-public class ConditionConfig
+public class CondSetConfig
 {
+    [JsonProperty("name")][DefaultValue("")] public string Name = string.Empty;
+    [JsonProperty("conds")][DefaultValue(null)] public List<CondConfig> Conditions = [];
+
+    public static string ToBase64(CondSetConfig conf)
+    {
+        string seri = JsonConvert.SerializeObject(conf);
+        var bytes = Encoding.UTF8.GetBytes(seri);
+        using var ms = new MemoryStream();
+        using (var gs = new GZipStream(ms, CompressionMode.Compress))
+            gs.Write(bytes, 0, bytes.Length);
+        return Convert.ToBase64String(ms.ToArray());
+    }
+
+    public static CondSetConfig? FromBase64(string s)
+    {
+        var data = Convert.FromBase64String(s);
+        using var ms = new MemoryStream(data);
+        using var gs = new GZipStream(ms, CompressionMode.Decompress);
+        using var r = new StreamReader(gs);
+        string confJson = r.ReadToEnd();
+
+        CondSetConfig? config;
+        try { config = JsonConvert.DeserializeObject<CondSetConfig>(confJson); }
+        catch { config = null; }
+        return config;
+    }
+}
+
+public class CondConfig
+{
+    [JsonProperty("id")][DefaultValue("Cond")] public string ID = "Cond";
     [JsonProperty("arg")][DefaultValue(0)] public dynamic Arg = 0;
     [JsonProperty("negate")][DefaultValue(false)] public bool Negate = false;
+    [JsonProperty("Op")][DefaultValue(ConditionManager.BinaryOperator.AND)] public ConditionManager.BinaryOperator Operator = ConditionManager.BinaryOperator.AND;
 }
 
 public class Configuration : IPluginConfiguration
@@ -80,33 +152,53 @@ public class Configuration : IPluginConfiguration
     [JsonIgnore] public static FileInfo ConfigFile => DalamudApi.PluginInterface.ConfigFile;
     [JsonIgnore] public string PrevPluginVersion = string.Empty;
 
-    public List<ProfileConfig> ProfileConfigs = new();
+    [JsonIgnore] public List<ProfileConfig> ProfileConfigs = new();
+    [JsonIgnore] public List<CondSetConfig> ConditionSets = new();
+    public bool NoConditionCache = false;
+
+    public List<string> EncodedProfiles = [];
+    public List<string> EncodedConditionSets = [];
     public bool ExportOnDelete = false;
 
     public void Initialize()
     {
-        if (ConfigFolder.Exists)
-        {
-            
-        }
+        ProfileConfigs.Clear();
+        foreach (string profile in EncodedProfiles)
+            ProfileConfigs.Add(ProfileConfig.FromBase64(profile));
+
+        ConditionSets.Clear();
+        foreach (string cond in EncodedConditionSets)
+            ConditionSets.Add(CondSetConfig.FromBase64(cond));
     }
 
     public void Save(bool failed = false)
     {
         try
         {
+            EncodedProfiles.Clear();
+            foreach (ProfileConfig profile in ProfileConfigs)
+            {
+                EncodedProfiles.Add(ProfileConfig.ToBase64(profile));
+            }
+
+            EncodedConditionSets.Clear();
+            foreach (CondSetConfig cond in ConditionSets)
+            {
+                EncodedConditionSets.Add(CondSetConfig.ToBase64(cond));
+            }
+
             DalamudApi.PluginInterface.SavePluginConfig(this);
         }
         catch
         {
             if (!failed)
             {
-                PluginLog.LogError("Failed to save. Trying again...");
+                DalamudApi.PluginLog.Error("Failed to save. Trying again...");
                 Save(true);
             }
             else
             {
-                PluginLog.LogError("Failed to save.");
+                DalamudApi.PluginLog.Error("Failed to save.");
             }
         }
     }
@@ -122,7 +214,7 @@ public class Configuration : IPluginConfiguration
         }
         catch (Exception e)
         {
-            PluginLog.LogError(e, "Failed to load config.");
+            DalamudApi.PluginLog.Error(e, "Failed to load config.");
         }
     }
 }

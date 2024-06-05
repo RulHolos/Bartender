@@ -51,21 +51,30 @@ public class DalamudApi
     [PluginService]
     public static IGameInteropProvider GameInteropProvider { get; private set; }
 
+    [PluginService]
+    public static ITextureProvider TextureProvider { get; private set; }
+
+    [PluginService]
+    public static IDataManager DataManager { get; private set; }
+
+    [PluginService]
+    public static IPluginLog PluginLog { get; private set; }
+
     #endregion
 
-    private static PluginCommandManager<IDalamudPlugin> pluginCommandManager;
+    private static PluginCommandManager<IDalamudPlugin> PluginCommandManager;
 
     public DalamudApi() { }
-    public DalamudApi(IDalamudPlugin plugin) => pluginCommandManager ??= new(plugin);
+    public DalamudApi(IDalamudPlugin plugin) => PluginCommandManager ??= new(plugin);
     public DalamudApi(IDalamudPlugin plugin, DalamudPluginInterface pluginInterface)
     {
         if (!pluginInterface.Inject(this))
         {
-            PluginLog.LogError("Failed loading DalamudApi.");
+            PluginLog.Error("Failed loading DalamudApi.");
             return;
         }
 
-        pluginCommandManager ??= new(plugin);
+        PluginCommandManager ??= new(plugin);
     }
 
     public static DalamudApi operator +(DalamudApi container, object o)
@@ -81,7 +90,7 @@ public class DalamudApi
     }
 
     public static void Initialize(IDalamudPlugin plugin, DalamudPluginInterface pluginInterface) => _ = new DalamudApi(plugin, pluginInterface);
-    public static void Dispose() => pluginCommandManager?.Dispose();
+    public static void Dispose() => PluginCommandManager?.Dispose();
 }
 
 #region PluginCommandManager

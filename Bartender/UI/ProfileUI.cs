@@ -30,8 +30,69 @@ public class ProfileUI : IDisposable
         ID = n;
     }
 
-    public void DrawConfig(ProfileConfig profile)
+    public void DrawConfig(BartenderUI mainUI, int i)
     {
+        ImGui.Columns(2, $"BartenderList-{i}", false);
+        ImGui.PushID(i);
+
+        ImGui.Text($"#{i + 1}");
+        ImGui.SameLine();
+
+        float textX = ImGui.GetCursorPosX();
+
+        ImGui.SetNextItemWidth(-1);
+        if (ImGui.InputText("##Name", ref Config.Name, 32))
+            Bartender.Configuration.Save();
+
+        ImGui.NextColumn();
+
+        if (ImGui.Button("↑"))
+            mainUI.ShiftProfile(i, false);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("Swap profile position with the one above.");
+        ImGui.SameLine();
+        if (ImGui.Button("↓"))
+            mainUI.ShiftProfile(i, true);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("Swap profile position with the one below.");
+        ImGui.SameLine();
+        if (ImGui.Button("Export"))
+        {
+            ImGui.SetClipboardText(ProfileConfig.ToBase64(Config));
+            DalamudApi.NotificationManager.AddNotification(new Dalamud.Interface.ImGuiNotification.Notification()
+            {
+                Content = $"Profile exported and copied to clipboard: {Config.Name}",
+                Type = Dalamud.Interface.Internal.Notifications.NotificationType.Success,
+                Minimized = false,
+                InitialDuration = TimeSpan.FromSeconds(3)
+            });
+        }
+        var preview = ((Config.ConditionSet >= 0) && (Config.ConditionSet < Bartender.Configuration.ConditionSets.Count))
+            ? $"[{Config.ConditionSet + 1}] {Bartender.Configuration.ConditionSets[Config.ConditionSet].Name}" : "No conditions...";
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(150);
+        if (ImGui.BeginCombo("##Condition", preview))
+        {
+            if (ImGui.Selectable("None", Config.ConditionSet == -1))
+            {
+                Config.ConditionSet = -1;
+                Bartender.Configuration.Save();
+            }
+            for (int id = 0; id < Bartender.Configuration.ConditionSets.Count; id++)
+            {
+                if (ImGui.Selectable($"[{id + 1}] {Bartender.Configuration.ConditionSets[id].Name}", id == Config.ConditionSet))
+                {
+                    Config.ConditionSet = id;
+                    Bartender.Configuration.Save();
+                }
+            }
+            ImGui.EndCombo();
+        }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("Condition Set to check. Will load this profile when the condition set is set to true.\nLeave this empty if you do not wish to load this profile automatically.");
+
+        ImGui.Separator();
+        ImGui.NextColumn();
         ImGui.Columns(1);
 
         ImGui.Text("Hotbars to load when using '/barload'");
@@ -55,28 +116,50 @@ public class ProfileUI : IDisposable
             SaveProfile();
         ImGui.SameLine();
         if (ImGui.Button("Load this profile"))
-            Bartender.Plugin.BarLoad("/barload", profile.Name);
+            Bartender.Plugin.BarLoad("/barload", Config.Name);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip($"Executes '/barload {profile.Name}'");
+            ImGui.SetTooltip($"Executes '/barload {Config.Name}'");
         
 
         if (ImGui.Button("Revert to game")) { }
+        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Doesn't do anything yet");
         ImGui.SameLine();
         if (ImGui.Button("Clear profile's hotbars"))
-            Bartender.Plugin.BarClear("/barclear", profile.Name);
+            Bartender.Plugin.BarClear("/barclear", Config.Name);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip($"Executes '/barclear {profile.Name}'");
+            ImGui.SetTooltip($"Executes '/barclear {Config.Name}'");
 
-        /*
         ImGui.Spacing();
         ImGui.Separator();
+        for (int s = 0; s < Bartender.NUM_OF_BARS; s++)
+        {
+            BarNums flag = (BarNums)(1 << s);
+            if ((Config.UsedBars & flag) != flag)
+                continue;
+            ImGui.Text($"Hotbar #{s+1}");
+            for (int j = 0; j < Bartender.NUM_OF_SLOTS; j++)
+            {
+                try
+                {
+                    var action = Config.Slots[s, j];
+                    var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(action.Icon));
+                    ImGui.Image(icon.ImGuiHandle, new Vector2(35, 35));
+                    if (ImGui.IsItemHovered() && !string.IsNullOrEmpty(action.Name))
+                    {
+                        ImGui.SetTooltip($"{action.Name}");
+                    }
+                    if (j < Bartender.NUM_OF_SLOTS - 1) ImGui.SameLine();
+                }
+                catch (Exception e)
+                {
+                    DalamudApi.PluginLog.Error($"{e}");
+                }
+            }
+            ImGui.Spacing();
+            ImGui.Separator();
+        }
 
-        if (ImGui.Checkbox("Load on HUD Layout change", ref profile.OnHUDChange))
-            Bartender.Configuration.Save();
-        ImGui.SameLine();
-        if (ImGui.SliderInt("##HUDLayout", ref profile.HUDLayout, 1, 4))
-            Bartender.Configuration.Save();
-        */
+        ImGui.PopID();
     }
 
     private void CheckboxFlags(string label, BarNums flags)
@@ -96,14 +179,17 @@ public class ProfileUI : IDisposable
             for (uint i = 0; i < Bartender.NUM_OF_SLOTS; i++)
             {
                 HotBarSlot* slot = Bartender.RaptureHotbar->GetSlotById(hotbars, i);
-                Bartender.Configuration.ProfileConfigs[ID].Slots[hotbars, i] = new HotbarSlot(slot->CommandId, slot->CommandType);
+                if (slot->CommandType == HotbarSlotType.Empty)
+                    slot->Icon = 0;
+                var fullText = slot->PopUpHelp.ToString();
+                Bartender.Configuration.ProfileConfigs[ID].Slots[hotbars, i] = new HotbarSlot(slot->CommandId, slot->CommandType, slot->Icon, fullText);
                 //ImGui.Text($"CommandId={slot->CommandId} | CommandType={slot->CommandType}");
             }
         }
         Bartender.Configuration.Save();
         DalamudApi.NotificationManager.AddNotification(new Dalamud.Interface.ImGuiNotification.Notification()
         {
-            Content = $"Profil saved: {Config.Name}",
+            Content = $"Profile saved: {Config.Name}",
             Type = Dalamud.Interface.Internal.Notifications.NotificationType.Success,
             Minimized = false,
             InitialDuration = TimeSpan.FromSeconds(3)

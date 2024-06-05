@@ -15,7 +15,7 @@
             "ui",
             "menu"
         ],
-        "IconUrl": "Bartender/images/icon.png",
+        "IconUrl": "https://raw.githubusercontent.com/AtaeKurri/Bartender/master/images/icon.png",
         "DownloadLinkInstall": "https://github.com/AtaeKurri/Bartender/releases/download/v1.0.0.0/latest.zip",
         "DownloadLinkTesting": "https://github.com/AtaeKurri/Bartender/releases/download/v1.0.0.0/latest.zip",
         "DownloadLinkUpdate": "https://github.com/AtaeKurri/Bartender/releases/download/v1.0.0.0/latest.zip"
