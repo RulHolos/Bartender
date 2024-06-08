@@ -15,8 +15,8 @@ Please create an [issue](https://github.com/AtaeKurri/Bartender/issues/new) if y
 
 ## Planned features
 
-* **Automation:** Load a profile of HUD Layout change or other conditions/triggers.
-* **GUI upgrades:** Preview of saved hotbars actions and allow for individual edit of actions.
+* **Gearsets** : Load a profile of a gear set change. (TODO: Rajouter une option dans le contextmenu pour lier un gearset à un
+profile)
 
 ## Usage
 

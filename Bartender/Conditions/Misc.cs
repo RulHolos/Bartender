@@ -4,9 +4,6 @@ using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Bartender.Conditions;
 
@@ -89,7 +86,6 @@ public class PluginCondition : ICondition, IDrawableCondition, IArgCondition
             }
             ImGui.EndCombo();
         }
-        if (cfg.Arg is not "Bartender") return;
     }
     public dynamic GetDefaultArg(CondConfig cfg) => cfg.Arg is string ? cfg.Arg : string.Empty;
 }
@@ -103,4 +99,47 @@ public class SanctuaryCondition : ICondition
     public bool Check(dynamic arg) => FFXIVClientStructs.FFXIV.Client.Game.GameMain.IsInSanctuary();
     public string GetTooltip(CondConfig cfg) => null;
     public string GetSelectableTooltip(CondConfig cfg) => "This is where you can get experience boosts";
+}
+
+[MiscCondition]
+public class PvPZoneCondition : ICondition
+{
+    public string ID => "pz";
+    public string ConditionName => "Is In PvP Zone";
+    public int DisplayPriority => 0;
+    public bool Check(dynamic arg) => FFXIVClientStructs.FFXIV.Client.Game.GameMain.IsInPvPArea();
+    public string GetTooltip(CondConfig cfg) => null;
+    public string GetSelectableTooltip(CondConfig cfg) => null;
+}
+
+[MiscCondition]
+public class PartyCondition : ICondition, IDrawableCondition, IArgCondition
+{
+    public string ID => "pt";
+    public string ConditionName => "# Of Party Members";
+    public int DisplayPriority => 0;
+    public unsafe bool Check(dynamic arg) => DalamudApi.PartyList.Length == arg;
+    public string GetTooltip(CondConfig cfg) => null;
+    public string GetSelectableTooltip(CondConfig cfg) => "True if there is enough members in your party";
+    public void Draw(CondConfig cfg)
+    {
+        var _ = (int)cfg.Arg + 1;
+        if (ImGui.SliderInt("##MemberCount", ref _, 1, 8))
+        {
+            cfg.Arg = _ - 1;
+            Bartender.Configuration.Save();
+        }
+    }
+    public dynamic GetDefaultArg(CondConfig cfg) => 1;
+}
+
+[MiscCondition]
+public class IsInHomeWorldCondition : ICondition
+{
+    public string ID => "hw";
+    public string ConditionName => "Is In Home World";
+    public int DisplayPriority => 0;
+    public bool Check(dynamic arg) => DalamudApi.ClientState.LocalPlayer?.CurrentWorld.Id == DalamudApi.ClientState.LocalPlayer?.HomeWorld.Id;
+    public string GetTooltip(CondConfig cfg) => null;
+    public string GetSelectableTooltip(CondConfig cfg) => "Check if the current character is in their home world";
 }

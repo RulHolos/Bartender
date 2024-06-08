@@ -26,21 +26,16 @@ public class BartenderUI : Window, IDisposable
     public readonly List<ProfileUI> Profiles;
 
     public BartenderUI()
-        : base($"Bartender v{Bartender.Configuration.GetVersion()}", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
+        : base($"Bartender v{Bartender.Configuration.GetVersion()}", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoMove)
     {
         SizeConstraints = new WindowSizeConstraints { MinimumSize = new Vector2(850, 500), MaximumSize = ImGuiHelpers.MainViewport.Size };
 
         Profiles = new List<ProfileUI>();
         for (int i = 0; i < Bartender.Configuration.ProfileConfigs.Count; i++)
-        {
             Profiles.Add(new ProfileUI(i));
-        }
     }
 
-    public void Reload()
-    {
-        Dispose();
-    }
+    public void Reload() => Dispose();
 
     public override void Draw()
     {
@@ -48,8 +43,6 @@ public class BartenderUI : Window, IDisposable
         {
             if (ImGui.BeginTabItem("Profiles"))
             {
-                // Be able to add new profiles from the UI. Be able to check individual bars to use in the profile.
-                // Add a button to allow to save the currnt UI into an already-existing profile.
                 DrawProfiles();
                 ImGui.EndTabItem();
             }
@@ -197,7 +190,7 @@ public class BartenderUI : Window, IDisposable
         Profiles.RemoveAt(i);
         Bartender.Configuration.ProfileConfigs.RemoveAt(i);
         Bartender.Configuration.Save();
-        RefreshBarIndexes();
+        RefreshProfilesIndexes();
     }
 
     public void ShiftProfile(int i, bool increment)
@@ -215,11 +208,11 @@ public class BartenderUI : Window, IDisposable
             Bartender.Configuration.Save();
             selectedProfile = profile2;
             selectedProfileID = j;
-            RefreshBarIndexes();
+            RefreshProfilesIndexes();
         }
     }
 
-    private void RefreshBarIndexes()
+    private void RefreshProfilesIndexes()
     {
         for (int i = 0; i < Profiles.Count; i++)
             Profiles[i].ID = i;
@@ -231,6 +224,11 @@ public class BartenderUI : Window, IDisposable
     {
         if (ImGui.Checkbox("Export on Delete", ref Bartender.Configuration.ExportOnDelete))
             Bartender.Configuration.Save();
+        /*
+        ImGui.SameLine();
+        if (ImGui.Checkbox("Use Penumbra", ref Bartender.Configuration.UsePenumbra))
+            Bartender.Configuration.Save();
+        */
     }
 
     private void DrawDebug()
@@ -245,6 +243,6 @@ public class BartenderUI : Window, IDisposable
 
     public void Dispose()
     {
-
+        return;
     }
 }

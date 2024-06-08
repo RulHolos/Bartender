@@ -1,24 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Linq.Expressions;
-using Dalamud.Logging;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
-using ImGuiNET;
 using Bartender.UI;
-using Newtonsoft.Json.Linq;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using System.Text.RegularExpressions;
-using static Bartender.ProfileConfig;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using Bartender.UI.Utils;
 using Dalamud.Interface.Windowing;
+using static Bartender.ProfileConfig;
 
 namespace Bartender;
 
@@ -27,10 +16,10 @@ public unsafe class Bartender : IDalamudPlugin
     public const int NUM_OF_BARS = 10;
     public const int NUM_OF_SLOTS = 12;
 
-    public static Bartender? Plugin { get; private set; }
-    public static Configuration? Configuration { get; private set; }
-    public static IconManager? IconManager { get; private set; }
-    public static Game? Game { get; private set; }
+    public static Bartender Plugin { get; private set; }
+    public static Configuration Configuration { get; private set; }
+    public static IconManager IconManager { get; private set; }
+    public static Game Game { get; private set; }
 
     public BartenderUI UI;
     private bool isPluginReady = false;
@@ -75,6 +64,7 @@ public unsafe class Bartender : IDalamudPlugin
         {
             Game.Initialize();
             ConditionManager.Initialize();
+            GearsetContextMenu.Initialize();
 
             isPluginReady = true;
         }
@@ -155,7 +145,18 @@ public unsafe class Bartender : IDalamudPlugin
     {
         if (!isPluginReady) return;
 
-        //ConditionManager.UpdateCache();
+        ConditionManager.UpdateCache();
+        for (int i = 0; i < Configuration.ConditionSets.Count; i++)
+            ConditionManager.CheckConditionSet(i);
+        foreach (var profile in Configuration.ProfileConfigs)
+        {
+            if (profile.ConditionSet == -1)
+                continue;
+            else if (!profile.IsAlreadyAutomaticallySet && Configuration.ConditionSets[profile.ConditionSet].Checked)
+                BarLoad("/barload", profile.Name);
+            else if (profile.IsAlreadyAutomaticallySet && !Configuration.ConditionSets[profile.ConditionSet].Checked)
+                profile.IsAlreadyAutomaticallySet = false;
+        }
     }
 
     private void Draw()
@@ -175,11 +176,14 @@ public unsafe class Bartender : IDalamudPlugin
 
         DalamudApi.Framework.Update -= Update;
         DalamudApi.PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfig;
+        DalamudApi.PluginInterface.UiBuilder.Draw -= Draw;
 
         DalamudApi.Dispose();
 
-        IconManager!.Dispose();
+        IconManager!.Dispose(); 
         UI.Dispose();
+        Game.Dispose();
+        GearsetContextMenu.Dispose();
     }
 
     public void Dispose()

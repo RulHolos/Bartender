@@ -38,4 +38,9 @@ public unsafe class Game
         actionCache.Add(adjustedActionId, action);
         return action;
     }
+
+    public static void Dispose()
+    {
+
+    }
 }

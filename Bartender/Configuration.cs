@@ -11,6 +11,7 @@ using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using System.Text;
 using System.IO.Compression;
+using FFXIVClientStructs.FFXIV.Client.Game;
 
 namespace Bartender;
 
@@ -33,6 +34,7 @@ public class ProfileConfig
     [JsonProperty("HUDLayout")][DefaultValue(0)] public int HUDLayout = 1;
     [JsonProperty("format")][DefaultValue(0)] public int format = 0;
     [JsonProperty("condset")][DefaultValue(-1)] public int ConditionSet = -1;
+    [JsonIgnore] public bool IsAlreadyAutomaticallySet = false;
     [JsonIgnore] public BarFormat Format = BarFormat.Default;
 
     [Flags]
@@ -66,10 +68,17 @@ public class ProfileConfig
 
         HotbarSlot[] rowArray = new HotbarSlot[Slots.GetLength(1)];
         for (int j = 0; j < Slots.GetLength(1); j++)
-        {
             rowArray[j] = Slots[rowIndex, j];
-        }
         return rowArray;
+    }
+
+    public void SetRow(HotbarSlot[] row, int rowIndex)
+    {
+        if (rowIndex < 0 || rowIndex >= Slots.GetLength(0))
+            throw new IndexOutOfRangeException("Row index is out of range.");
+
+        for (int j = 0; j < Slots.GetLength(1); j++)
+            Slots[rowIndex, j] = row[j];
     }
 
     public static string ToBase64(ProfileConfig conf)
@@ -97,10 +106,12 @@ public class ProfileConfig
     }
 }
 
+[Serializable]
 public class CondSetConfig
 {
     [JsonProperty("name")][DefaultValue("")] public string Name = string.Empty;
     [JsonProperty("conds")][DefaultValue(null)] public List<CondConfig> Conditions = [];
+    [JsonIgnore] public bool Checked = false;
 
     public static string ToBase64(CondSetConfig conf)
     {
@@ -138,13 +149,12 @@ public class CondConfig
 public class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 1;
-    public string PluginVersion = ".init";
+    public string PluginVersion { get; private set; } = ".init";
     public string GetVersion() => PluginVersion;
     public void UpdateVersion()
     {
-        if (PluginVersion != ".init")
-            PrevPluginVersion = PluginVersion;
-        PluginVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+        Version? version = Assembly.GetExecutingAssembly().GetName().Version;
+        PluginVersion = $"{version.Major}.{version.Minor}.{version.Build}";
     }
     public bool CheckVersion() => PluginVersion == Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 
@@ -159,6 +169,7 @@ public class Configuration : IPluginConfiguration
     public List<string> EncodedProfiles = [];
     public List<string> EncodedConditionSets = [];
     public bool ExportOnDelete = false;
+    public bool UsePenumbra = true;
 
     public void Initialize()
     {
@@ -177,15 +188,11 @@ public class Configuration : IPluginConfiguration
         {
             EncodedProfiles.Clear();
             foreach (ProfileConfig profile in ProfileConfigs)
-            {
                 EncodedProfiles.Add(ProfileConfig.ToBase64(profile));
-            }
 
             EncodedConditionSets.Clear();
             foreach (CondSetConfig cond in ConditionSets)
-            {
                 EncodedConditionSets.Add(CondSetConfig.ToBase64(cond));
-            }
 
             DalamudApi.PluginInterface.SavePluginConfig(this);
         }

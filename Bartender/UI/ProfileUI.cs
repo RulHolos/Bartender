@@ -5,6 +5,10 @@ using ImGuiNET;
 using Dalamud.Interface.Utility;
 using static Bartender.ProfileConfig;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using Bartender.UI.Utils;
+using Dalamud.Interface.Components;
+using System.Linq;
+using FFXIVClientStructs.FFXIV.Client.Game;
 
 namespace Bartender.UI;
 
@@ -89,7 +93,9 @@ public class ProfileUI : IDisposable
             ImGui.EndCombo();
         }
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Condition Set to check. Will load this profile when the condition set is set to true.\nLeave this empty if you do not wish to load this profile automatically.");
+            ImGui.SetTooltip("Condition Set to check. Will load this profile when the condition set is set to true.\n" +
+                "Leave this empty if you do not wish to load this profile automatically.\n" +
+                "Warning: Profile ordering matters: Profiles with an higher id will be higher in the priority list.");
 
         ImGui.Separator();
         ImGui.NextColumn();
@@ -100,8 +106,10 @@ public class ProfileUI : IDisposable
         int num = 1;
         foreach (BarNums bar in Enum.GetValues(typeof(BarNums)))
         {
-            if (bar == BarNums.None) continue; // Skip BarNums.None.
-            if (num > 1 /*&& num != 6*/) ImGui.SameLine();
+            if (bar == BarNums.None)
+                continue; // Skip BarNums.None.
+            if (num > 1 /*&& num != 6*/)
+                ImGui.SameLine();
             CheckboxFlags($"#{num}", bar);
             num++;
         }
@@ -131,35 +139,59 @@ public class ProfileUI : IDisposable
 
         ImGui.Spacing();
         ImGui.Separator();
+        int currentBar = -1;
+        int currentSlot = -1;
         for (int s = 0; s < Bartender.NUM_OF_BARS; s++)
         {
             BarNums flag = (BarNums)(1 << s);
             if ((Config.UsedBars & flag) != flag)
                 continue;
-            ImGui.Text($"Hotbar #{s+1}");
-            for (int j = 0; j < Bartender.NUM_OF_SLOTS; j++)
-            {
-                try
-                {
-                    var action = Config.Slots[s, j];
-                    var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(action.Icon));
-                    ImGui.Image(icon.ImGuiHandle, new Vector2(35, 35));
-                    if (ImGui.IsItemHovered() && !string.IsNullOrEmpty(action.Name))
-                    {
-                        ImGui.SetTooltip($"{action.Name}");
-                    }
-                    if (j < Bartender.NUM_OF_SLOTS - 1) ImGui.SameLine();
-                }
-                catch (Exception e)
-                {
-                    DalamudApi.PluginLog.Error($"{e}");
-                }
-            }
-            ImGui.Spacing();
-            ImGui.Separator();
+            DrawHotbar(s);
         }
 
         ImGui.PopID();
+    }
+
+    private unsafe void DrawHotbar(int hotbar)
+    {
+        ImGui.Text($"Hotbar #{hotbar + 1}");
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("You can drag and slide icons to re-arrange them inside this hotbar");
+        for (int j = 0; j < Bartender.NUM_OF_SLOTS; j++)
+        {
+            try
+            {
+                ImGui.PushID(j);
+
+                var action = Config.Slots[hotbar, j];
+                var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(action.Icon));
+                ImGui.ImageButton(icon.ImGuiHandle, new Vector2(35, 35), default, new Vector2(1f, 1f), 0, new Vector4(0));
+                if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
+                {
+                    ImGuiEx.SetupSlider(false, ImGui.GetItemRectSize().X + ImGui.GetStyle().ItemSpacing.X, (hitInterval, increment, closing) =>
+                    {
+                        if (hitInterval)
+                            ShiftIcon(hotbar, action, increment);
+                        ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEW);
+                    });
+                }
+                if (ImGui.IsItemHovered() && action.CommandType != HotbarSlotType.Empty)
+                {
+                    ImGui.SetTooltip($"{action.Name}");
+                    ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+                }
+                    
+                if (j < Bartender.NUM_OF_SLOTS - 1) ImGui.SameLine();
+
+                ImGui.PopID();
+            }
+            catch (Exception e)
+            {
+                DalamudApi.PluginLog.Error($"{e}");
+            }
+        }
+        ImGui.Spacing();
+        ImGui.Separator();
     }
 
     private void CheckboxFlags(string label, BarNums flags)
@@ -176,14 +208,15 @@ public class ProfileUI : IDisposable
     {
         for (uint hotbars = 0; hotbars < Bartender.NUM_OF_BARS; hotbars++)
         {
+            
             for (uint i = 0; i < Bartender.NUM_OF_SLOTS; i++)
             {
                 HotBarSlot* slot = Bartender.RaptureHotbar->GetSlotById(hotbars, i);
                 if (slot->CommandType == HotbarSlotType.Empty)
                     slot->Icon = 0;
-                var fullText = slot->PopUpHelp.ToString();
-                Bartender.Configuration.ProfileConfigs[ID].Slots[hotbars, i] = new HotbarSlot(slot->CommandId, slot->CommandType, slot->Icon, fullText);
-                //ImGui.Text($"CommandId={slot->CommandId} | CommandType={slot->CommandType}");
+                string fullText = slot->PopUpHelp.ToString();
+                Bartender.Configuration.ProfileConfigs[ID].Slots[hotbars, i] =
+                    new HotbarSlot(slot->CommandId, slot->CommandType, slot->Icon, fullText);
             }
         }
         Bartender.Configuration.Save();
@@ -194,6 +227,23 @@ public class ProfileUI : IDisposable
             Minimized = false,
             InitialDuration = TimeSpan.FromSeconds(3)
         });
+    }
+
+    private void ShiftIcon(int profileId, HotbarSlot slot, bool increment)
+    {
+        HotbarSlot[] hotbar = Config.GetRow(profileId);
+        int i = hotbar.ToList().IndexOf(slot);
+        if (!increment ? i > 0 : i < (hotbar.Length - 1))
+        {
+            int j = (increment ? i + 1 : i - 1);
+            HotbarSlot oldSlot = hotbar[i];
+            HotbarSlot newSlot = hotbar[j];
+            hotbar[i] = newSlot;
+            hotbar[j] = oldSlot;
+
+            Config.SetRow(hotbar, profileId);
+            Bartender.Configuration.Save();
+        }
     }
 
     public void Dispose()

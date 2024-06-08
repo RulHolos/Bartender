@@ -67,11 +67,13 @@ public static class ConditionManager
         foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsAssignableTo(typeof(IConditionCategory)) && !t.IsInterface))
         {
             var category = Activator.CreateInstance(t) as IConditionCategory;
-            if (category == null) continue;
+            if (category == null)
+                continue;
 
             var list = new List<ICondition>();
             ConditionCategories.Add((category, list));
-            if (!t.IsAssignableTo(typeof(ICondition))) continue;
+            if (!t.IsAssignableTo(typeof(ICondition)))
+                continue;
 
             list.Add((ICondition)category);
         }
@@ -79,7 +81,8 @@ public static class ConditionManager
         foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsAssignableTo(typeof(ICondition)) && !t.IsInterface))
         {
             var condition = Activator.CreateInstance(t) as ICondition;
-            if (condition == null) continue;
+            if (condition == null)
+                continue;
 
             Conditions.Add(condition.ID, condition);
 
@@ -92,7 +95,8 @@ public static class ConditionManager
             }
 
             var (category, list) = ConditionCategories.FirstOrDefault(tuple => tuple.category.GetType() == categoryType);
-            if (category == null) continue;
+            if (category == null)
+                continue;
 
             list.Add(condition);
             CategoryMap.Add(condition, category);
@@ -196,6 +200,7 @@ public static class ConditionManager
 
         ConditionSetCache[set] = (previous, Bartender.RunTime);
         DebugSteps[set] = steps;
+        set.Checked = previous;
         return previous;
     }
 

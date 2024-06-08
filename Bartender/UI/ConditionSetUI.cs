@@ -94,7 +94,7 @@ public static class ConditionSetUI
         {
             CondSetConfig set = Bartender.Configuration.ConditionSets[i];
 
-            ImGui.PushStyleColor(ImGuiCol.Text, ConditionManager.CheckConditionSet(set) ? 0xFF00FF00u : 0xFF0000FFu);
+            ImGui.PushStyleColor(ImGuiCol.Text, set.Checked ? 0xFF00FF00u : 0xFF0000FFu);
             if (ImGui.Selectable($"#{i + 1}: {set.Name}", SelectedSet == set))
             {
                 SelectedSet = set;

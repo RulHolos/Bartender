@@ -60,6 +60,15 @@ public class DalamudApi
     [PluginService]
     public static IPluginLog PluginLog { get; private set; }
 
+    [PluginService]
+    public static Dalamud.Plugin.Services.ICondition Condition { get; private set; }
+
+    [PluginService]
+    public static IPartyList PartyList { get; private set; }
+
+    [PluginService]
+    public static ITargetManager TargetManager { get; private set; }
+
     #endregion
 
     private static PluginCommandManager<IDalamudPlugin> PluginCommandManager;

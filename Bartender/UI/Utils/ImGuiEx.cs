@@ -1,5 +1,6 @@
 using Dalamud.Interface.Utility;
 using ImGuiNET;
+using Lumina.Excel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,5 +77,53 @@ public static class ImGuiEx
 
         if (!popupOpen)
             ImGui.EndPopup();
+    }
+
+    private static string search = string.Empty;
+    private static HashSet<ExcelRow> filtered;
+    public static bool ExcelSheetCombo<T>(string id, out T selected, Func<ExcelSheet<T>, string> getPreview, ImGuiComboFlags flags, Func<T, string, bool> searchPredicate, Func<T, bool> selectableDrawing) where T : ExcelRow
+    {
+        var sheet = DalamudApi.DataManager.GetExcelSheet<T>();
+        return ExcelSheetCombo(id, out selected, getPreview(sheet), flags, sheet, searchPredicate, selectableDrawing);
+    }
+
+    public static bool ExcelSheetCombo<T>(string id,
+        out T selected,
+        string preview,
+        ImGuiComboFlags flags,
+        ExcelSheet<T> sheet,
+        Func<T, string, bool> searchPredicate,
+        Func<T, bool> drawRow) where T : ExcelRow
+    {
+        selected = null;
+        if (!ImGui.BeginCombo(id, preview, flags)) return false;
+
+        if (ImGui.IsWindowAppearing() && ImGui.IsWindowFocused() && !ImGui.IsAnyItemActive())
+        {
+            search = string.Empty;
+            filtered = null;
+            ImGui.SetKeyboardFocusHere(0);
+        }
+
+        if (ImGui.InputText("##ExcelSheetComboSearch", ref search, 128))
+            filtered = null;
+
+        filtered ??= sheet.Where(s => searchPredicate(s, search)).Select(s => (ExcelRow)s).ToHashSet();
+
+        var i = 0;
+        foreach (var row in filtered.Cast<T>())
+        {
+            ImGui.PushID(i++);
+            if (drawRow(row))
+                selected = row;
+            ImGui.PopID();
+
+            if (selected == null) continue;
+            ImGui.EndCombo();
+            return true;
+        }
+
+        ImGui.EndCombo();
+        return false;
     }
 }
