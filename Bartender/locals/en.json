@@ -1,0 +1,27 @@
+{
+    "tab.Profiles": "Profiles",
+    "tab.Automation": "Automation",
+    "tab.Settings": "Settings",
+    "tab.Debug": "Debug",
+
+    "btn.SaveHotbars": "Save current hotbars",
+    "btn.LoadProfile": "Load this profile",
+    "btn.UndoLastSave": "Undo last save",
+    "btn.ClearHotbars": "Clear profile's hotbars",
+
+    "text.Hotbar": "Hotbar #{0}",
+
+    "selectable.DeleteProfile": "Delete profile '{0}' permanently",
+
+    "tooltip.CreateProfile": "Create a new profile",
+    "tooltip.ImportProfile": "Import a profile from the clipboard",
+    "tooltip.DeleteProfile": "Hold SHIFT to delete",
+    "tooltip.DragAndSlide": "You can drag and slide icons to re-arrange them inside this hotbar",
+
+    "notify.ProfileSaved": "Profile saved: {0}",
+    "notify.CannotImport": "Cannot import profile",
+    "notify.ProfileImported": "Profile imported: {0}",
+    "notify.ProfileExported": "Profile exported and copied to clipboard: {0}",
+
+    "conf.ExportOnDelete": "Export on Delete"
+}

@@ -15,8 +15,7 @@ Please create an [issue](https://github.com/AtaeKurri/Bartender/issues/new) if y
 
 ## Planned features
 
-* **Gearsets** : Load a profile of a gear set change. (TODO: Rajouter une option dans le contextmenu pour lier un gearset à un
-profile)
+* Currently none
 
 ## Usage
 
@@ -26,4 +25,4 @@ profile)
 -> Click `Save current hotbars`.
 -> Check the hotbars you want to use/load.
 
-You can then load your profile using the `/barload <profile name>` command inside the chat or in a macro.
+You can then load your profile using the `/barload <profile name>` command inside the chat, in the config or in a macro.

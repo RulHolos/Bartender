@@ -16,6 +16,8 @@ public static class IpcProvider
     public const string Namespace = "Bartender";
 
     public static ICallGateProvider<(uint, uint, uint)>? ApiVersion;
+    public static ICallGateProvider<object> Initialized;
+    public static ICallGateProvider<object> Disposed;
     public static ICallGateProvider<string[]>? GetProfiles;
     public static ICallGateProvider<string[]>? GetConditionSets;
     public static ICallGateProvider<int, bool>? CheckConditionSet;
@@ -24,6 +26,9 @@ public static class IpcProvider
     {
         ApiVersion = DalamudApi.PluginInterface.GetIpcProvider<(uint, uint, uint)>($"{Namespace}.{nameof(ApiVersion)}");
         ApiVersion.RegisterFunc(() => (Breaking, Features, Build));
+
+        Initialized = DalamudApi.PluginInterface.GetIpcProvider<object>($"{Namespace}.Initialized");
+        Disposed = DalamudApi.PluginInterface.GetIpcProvider<object>($"{Namespace}.Disposed");
 
         GetProfiles = DalamudApi.PluginInterface.GetIpcProvider<string[]>($"{Namespace}.GetProfiles");
         GetProfiles.RegisterFunc(() => Bartender.Configuration.ProfileConfigs.Select(s => s.Name).ToArray());

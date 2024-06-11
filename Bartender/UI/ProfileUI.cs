@@ -9,6 +9,7 @@ using Bartender.UI.Utils;
 using Dalamud.Interface.Components;
 using System.Linq;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using Bartender.DataCommands;
 
 namespace Bartender.UI;
 
@@ -65,7 +66,7 @@ public class ProfileUI : IDisposable
             ImGui.SetClipboardText(ProfileConfig.ToBase64(Config));
             DalamudApi.NotificationManager.AddNotification(new Dalamud.Interface.ImGuiNotification.Notification()
             {
-                Content = $"Profile exported and copied to clipboard: {Config.Name}",
+                Content = Localization.Get("notify.ProfileExported", Config.Name),
                 Type = Dalamud.Interface.Internal.Notifications.NotificationType.Success,
                 Minimized = false,
                 InitialDuration = TimeSpan.FromSeconds(3)
@@ -79,15 +80,13 @@ public class ProfileUI : IDisposable
         {
             if (ImGui.Selectable("None", Config.ConditionSet == -1))
             {
-                Config.ConditionSet = -1;
-                Bartender.Configuration.Save();
+                Bartender.AddAndExecuteCommand(new ChangeConditionSetCommand(Config.ConditionSet, -1, Config));
             }
             for (int id = 0; id < Bartender.Configuration.ConditionSets.Count; id++)
             {
                 if (ImGui.Selectable($"[{id + 1}] {Bartender.Configuration.ConditionSets[id].Name}", id == Config.ConditionSet))
                 {
-                    Config.ConditionSet = id;
-                    Bartender.Configuration.Save();
+                    Bartender.AddAndExecuteCommand(new ChangeConditionSetCommand(Config.ConditionSet, id, Config));
                 }
             }
             ImGui.EndCombo();
@@ -120,27 +119,21 @@ public class ProfileUI : IDisposable
 #endif
         ImGui.Spacing();
 
-        if (ImGui.Button("Save current hotbars"))
+        if (ImGui.Button(Localization.Get("btn.SaveHotbars")))
             SaveProfile();
         ImGui.SameLine();
-        if (ImGui.Button("Load this profile"))
+        if (ImGui.Button(Localization.Get("btn.LoadProfile")))
             Bartender.Plugin.BarLoad("/barload", Config.Name);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip($"Executes '/barload {Config.Name}'");
+            ImGui.SetTooltip($"Execute '/barload {Config.Name}'");
         
-
-        if (ImGui.Button("Revert to game")) { }
-        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Doesn't do anything yet");
-        ImGui.SameLine();
-        if (ImGui.Button("Clear profile's hotbars"))
+        if (ImGui.Button(Localization.Get("btn.ClearHotbars")))
             Bartender.Plugin.BarClear("/barclear", Config.Name);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip($"Executes '/barclear {Config.Name}'");
+            ImGui.SetTooltip($"Execute '/barclear {Config.Name}'");
 
         ImGui.Spacing();
         ImGui.Separator();
-        int currentBar = -1;
-        int currentSlot = -1;
         for (int s = 0; s < Bartender.NUM_OF_BARS; s++)
         {
             BarNums flag = (BarNums)(1 << s);
@@ -154,9 +147,9 @@ public class ProfileUI : IDisposable
 
     private unsafe void DrawHotbar(int hotbar)
     {
-        ImGui.Text($"Hotbar #{hotbar + 1}");
+        ImGui.Text(Localization.Get("text.Hotbar", hotbar + 1));
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("You can drag and slide icons to re-arrange them inside this hotbar");
+            ImGui.SetTooltip(Localization.Get("tooltip.DragAndSlide"));
         for (int j = 0; j < Bartender.NUM_OF_SLOTS; j++)
         {
             try
@@ -208,7 +201,6 @@ public class ProfileUI : IDisposable
     {
         for (uint hotbars = 0; hotbars < Bartender.NUM_OF_BARS; hotbars++)
         {
-            
             for (uint i = 0; i < Bartender.NUM_OF_SLOTS; i++)
             {
                 HotBarSlot* slot = Bartender.RaptureHotbar->GetSlotById(hotbars, i);
@@ -220,13 +212,7 @@ public class ProfileUI : IDisposable
             }
         }
         Bartender.Configuration.Save();
-        DalamudApi.NotificationManager.AddNotification(new Dalamud.Interface.ImGuiNotification.Notification()
-        {
-            Content = $"Profile saved: {Config.Name}",
-            Type = Dalamud.Interface.Internal.Notifications.NotificationType.Success,
-            Minimized = false,
-            InitialDuration = TimeSpan.FromSeconds(3)
-        });
+        NotificationManager.Display(Localization.Get("notify.ProfileSaved", Config.Name), Dalamud.Interface.Internal.Notifications.NotificationType.Success, 3);
     }
 
     private void ShiftIcon(int profileId, HotbarSlot slot, bool increment)

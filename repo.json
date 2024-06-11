@@ -4,9 +4,9 @@
         "Name": "Bartender",
         "InternalName": "Bartender",
         "Punchline": "Need more hotbars? You damn bet we all do.",
-        "Description": "Save and load hotbars with macros and/or chat commands. We all need more than 10 hotbars, well now we do have those.",
-        "AssemblyVersion": "1.0.0.0",
-        "TestingAssemblyVersion": "1.0.0.0",
+        "Description": "Save and load hotbar profiles with chat commands and/or macros. Allows for automation too!",
+        "AssemblyVersion": "2.0.0",
+        "TestingAssemblyVersion": "2.0.0",
         "RepoUrl": "https://github.com/AtaeKurri/Bartender",
         "ApplicableVersion": "any",
         "DalamudApiLevel": 9,
@@ -16,8 +16,8 @@
             "menu"
         ],
         "IconUrl": "https://raw.githubusercontent.com/AtaeKurri/Bartender/master/images/icon.png",
-        "DownloadLinkInstall": "https://github.com/AtaeKurri/Bartender/releases/download/v1.0.0.0/latest.zip",
-        "DownloadLinkTesting": "https://github.com/AtaeKurri/Bartender/releases/download/v1.0.0.0/latest.zip",
-        "DownloadLinkUpdate": "https://github.com/AtaeKurri/Bartender/releases/download/v1.0.0.0/latest.zip"
+        "DownloadLinkInstall": "https://github.com/AtaeKurri/Bartender/releases/download/v2.0.0/latest.zip",
+        "DownloadLinkTesting": "https://github.com/AtaeKurri/Bartender/releases/download/v2.0.0/latest.zip",
+        "DownloadLinkUpdate": "https://github.com/AtaeKurri/Bartender/releases/download/v2.0.0/latest.zip"
     }
 ]

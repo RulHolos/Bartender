@@ -10,6 +10,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using Dalamud.Interface.Components;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Bartender.UI.Utils;
+using Bartender.DataCommands;
 
 namespace Bartender.UI;
 
@@ -18,15 +19,15 @@ public class BartenderUI : Window, IDisposable
     private bool lastConfigPopupOpen = false;
     private bool configPopupOpen = false;
     private Vector2 iconButtonSize = new(26);
-    private ProfileConfig? selectedProfile;
-    private int? selectedProfileID;
+    public ProfileConfig? selectedProfile;
+    public int? selectedProfileID;
     public bool IsConfigPopupOpen() => configPopupOpen || lastConfigPopupOpen;
     public void SetConfigPopupOpen() => configPopupOpen = true;
 
     public readonly List<ProfileUI> Profiles;
 
     public BartenderUI()
-        : base($"Bartender v{Bartender.Configuration.GetVersion()}", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoMove)
+        : base($"Bartender v{Bartender.Configuration.GetVersion()}", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
         SizeConstraints = new WindowSizeConstraints { MinimumSize = new Vector2(850, 500), MaximumSize = ImGuiHelpers.MainViewport.Size };
 
@@ -39,25 +40,43 @@ public class BartenderUI : Window, IDisposable
 
     public override void Draw()
     {
+        if (Bartender.Plugin.CommandStack.Count <= 0)
+            ImGui.BeginDisabled();
+        if (ImGuiComponents.IconButton(FontAwesomeIcon.Undo))
+            Bartender.Undo();
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip($"Undo: {Bartender.Plugin.CommandStack.Peek()}");
+        if (Bartender.Plugin.CommandStack.Count <= 0)
+            ImGui.EndDisabled();
+        ImGui.SameLine();
+        if (Bartender.Plugin.UndoCommandStack.Count <= 0)
+            ImGui.BeginDisabled();
+        if (ImGuiComponents.IconButton(FontAwesomeIcon.Redo))
+            Bartender.Redo();
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip($"Redo: {Bartender.Plugin.UndoCommandStack.Peek()}");
+        if (Bartender.Plugin.UndoCommandStack.Count <= 0)
+            ImGui.EndDisabled();
+
         if (ImGui.BeginTabBar("Config Tabs"))
         {
-            if (ImGui.BeginTabItem("Profiles"))
+            if (ImGui.BeginTabItem(Localization.Get("tab.Profiles")))
             {
                 DrawProfiles();
                 ImGui.EndTabItem();
             }
-            if (ImGui.BeginTabItem("Automation"))
+            if (ImGui.BeginTabItem(Localization.Get("tab.Automation")))
             {
                 ConditionSetUI.Draw(iconButtonSize);
                 ImGui.EndTabItem();
             }
-            if (ImGui.BeginTabItem("Settings"))
+            if (ImGui.BeginTabItem(Localization.Get("tab.Settings")))
             {
                 DrawSettings();
                 ImGui.EndTabItem();
             }
 #if DEBUG
-            if (ImGui.BeginTabItem("Debug"))
+            if (ImGui.BeginTabItem(Localization.Get("tab.Debug")))
             {
                 DrawDebug();
                 ImGui.EndTabItem();
@@ -91,7 +110,7 @@ public class BartenderUI : Window, IDisposable
                     AddProfile(new ProfileConfig());
                 }
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip("Create a new profile from the currently active hotbars");
+                    ImGui.SetTooltip(Localization.Get("tooltip.CreateProfile"));
 
                 ImGui.SameLine();
             }
@@ -105,7 +124,7 @@ public class BartenderUI : Window, IDisposable
             }
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip("Import a profile from the clipboard");
+                ImGui.SetTooltip(Localization.Get("tooltip.ImportProfile"));
             }
         }
         ImGui.EndGroup();
@@ -136,14 +155,14 @@ public class BartenderUI : Window, IDisposable
             if (ImGui.BeginPopupContextItem())
             {
                 ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetColorU32(ImGui.GetIO().KeyShift ? ImGuiCol.Text : ImGuiCol.TextDisabled));
-                if (ImGui.Selectable($"Delete profile '{profile.Name}' permanently") && ImGui.GetIO().KeyShift)
+                if (ImGui.Selectable(Localization.Get("selectable.DeleteProfile", profile.Name)) && ImGui.GetIO().KeyShift)
                 {
                     RemoveProfile(i);
                     if (selectedProfile == profile) selectedProfile = null;
                 }
                 ImGui.PopStyleColor();
                 if (!ImGui.GetIO().KeyShift && ImGui.IsItemHovered())
-                    ImGui.SetTooltip("Hold SHIFT to delete.");
+                    ImGui.SetTooltip(Localization.Get("tooltip.DeleteProfile"));
                 ImGui.EndPopup();
             }
         }
@@ -151,46 +170,53 @@ public class BartenderUI : Window, IDisposable
 
     private void ImportProfile(string import)
     {
-        ProfileConfig config = ProfileConfig.FromBase64(import);
+        ProfileConfig? config = null;
+        try { config = ProfileConfig.FromBase64(import); }
+        catch { }
+        
         if (config == null)
         {
             DalamudApi.NotificationManager.AddNotification(new Dalamud.Interface.ImGuiNotification.Notification()
             {
-                Content = $"Cannot import profile",
+                Content = Localization.Get("notify.CannotImport"),
                 Type = Dalamud.Interface.Internal.Notifications.NotificationType.Error,
                 Minimized = false,
                 InitialDuration = TimeSpan.FromSeconds(3)
             });
             return;
         }
-        AddProfile(config);
+        if (!AddProfile(config))
+            return;
 
         DalamudApi.NotificationManager.AddNotification(new Dalamud.Interface.ImGuiNotification.Notification()
         {
-            Content = $"Profile imported: {config.Name}",
+            Content = Localization.Get("notify.ProfileImported", config.Name),
             Type = Dalamud.Interface.Internal.Notifications.NotificationType.Success,
             Minimized = false,
             InitialDuration = TimeSpan.FromSeconds(3)
         });
     }
 
-    private void AddProfile(ProfileConfig cfg)
+    private bool AddProfile(ProfileConfig cfg)
     {
-        Bartender.Configuration.ProfileConfigs.Add(cfg);
-        Profiles.Add(new ProfileUI(Profiles.Count));
-        Bartender.Configuration.Save();
+        return Bartender.AddAndExecuteCommand(new AddProfileCommand(cfg));
     }
 
-    private void RemoveProfile(int i)
+    public void RemoveProfile(int i)
     {
         if (Bartender.Configuration.ExportOnDelete)
-            ImGui.SetClipboardText("export on delete test");
+        {
+            ImGui.SetClipboardText(ProfileConfig.ToBase64(Profiles[i].Config));
+            DalamudApi.NotificationManager.AddNotification(new Dalamud.Interface.ImGuiNotification.Notification()
+            {
+                Content = Localization.Get("notify.ProfileExported", Profiles[i].Config.Name),
+                Type = Dalamud.Interface.Internal.Notifications.NotificationType.Success,
+                Minimized = false,
+                InitialDuration = TimeSpan.FromSeconds(3)
+            });
+        }
 
-        Profiles[i].Dispose();
-        Profiles.RemoveAt(i);
-        Bartender.Configuration.ProfileConfigs.RemoveAt(i);
-        Bartender.Configuration.Save();
-        RefreshProfilesIndexes();
+        Bartender.AddAndExecuteCommand(new RemoveProfileCommand(Profiles[i].Config));
     }
 
     public void ShiftProfile(int i, bool increment)
@@ -199,20 +225,11 @@ public class BartenderUI : Window, IDisposable
         {
             var j = (increment ? i + 1 : i - 1);
             var profile = Profiles[i];
-            Profiles.RemoveAt(i);
-            Profiles.Insert(j, profile);
-
-            var profile2 = Bartender.Configuration.ProfileConfigs[i];
-            Bartender.Configuration.ProfileConfigs.RemoveAt(i);
-            Bartender.Configuration.ProfileConfigs.Insert(j, profile2);
-            Bartender.Configuration.Save();
-            selectedProfile = profile2;
-            selectedProfileID = j;
-            RefreshProfilesIndexes();
+            Bartender.AddAndExecuteCommand(new ShiftProfileCommand(i, j, profile));
         }
     }
 
-    private void RefreshProfilesIndexes()
+    public void RefreshProfilesIndexes()
     {
         for (int i = 0; i < Profiles.Count; i++)
             Profiles[i].ID = i;
@@ -222,8 +239,9 @@ public class BartenderUI : Window, IDisposable
 
     private void DrawSettings()
     {
-        if (ImGui.Checkbox("Export on Delete", ref Bartender.Configuration.ExportOnDelete))
+        if (ImGui.Checkbox(Localization.Get("conf.ExportOnDelete"), ref Bartender.Configuration.ExportOnDelete))
             Bartender.Configuration.Save();
+
         /*
         ImGui.SameLine();
         if (ImGui.Checkbox("Use Penumbra", ref Bartender.Configuration.UsePenumbra))
@@ -239,6 +257,15 @@ public class BartenderUI : Window, IDisposable
         ImGui.NextColumn();
         ImGui.TextUnformatted($"{Game.CurrentHUDLayout}");
         ImGui.NextColumn();
+
+        if (ImGui.TreeNode("Command History"))
+        {
+            foreach (DataCommand command in Bartender.Plugin.CommandStack)
+            {
+                ImGui.Text($"{command.GetType().Name}");
+            }
+            ImGui.TreePop();
+        }
     }
 
     public void Dispose()

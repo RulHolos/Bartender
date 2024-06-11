@@ -4,14 +4,10 @@ using System.IO;
 using System.Reflection;
 using System.ComponentModel;
 using Newtonsoft.Json;
-using ImGuiNET;
 using Dalamud.Configuration;
-using Dalamud.Interface.Utility;
-using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using System.Text;
 using System.IO.Compression;
-using FFXIVClientStructs.FFXIV.Client.Game;
 
 namespace Bartender;
 
@@ -23,7 +19,6 @@ public struct HotbarSlot(uint id, HotbarSlotType type, int icon, string name)
     public int Icon = icon;
 }
 
-[Serializable]
 public class ProfileConfig
 {
     [JsonProperty("name")][DefaultValue("")] public string Name = string.Empty;
@@ -106,7 +101,6 @@ public class ProfileConfig
     }
 }
 
-[Serializable]
 public class CondSetConfig
 {
     [JsonProperty("name")][DefaultValue("")] public string Name = string.Empty;
@@ -146,6 +140,7 @@ public class CondConfig
     [JsonProperty("Op")][DefaultValue(ConditionManager.BinaryOperator.AND)] public ConditionManager.BinaryOperator Operator = ConditionManager.BinaryOperator.AND;
 }
 
+[Serializable]
 public class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 1;
@@ -162,8 +157,8 @@ public class Configuration : IPluginConfiguration
     [JsonIgnore] public static FileInfo ConfigFile => DalamudApi.PluginInterface.ConfigFile;
     [JsonIgnore] public string PrevPluginVersion = string.Empty;
 
-    [JsonIgnore] public List<ProfileConfig> ProfileConfigs = new();
-    [JsonIgnore] public List<CondSetConfig> ConditionSets = new();
+    [JsonIgnore] public List<ProfileConfig> ProfileConfigs { get; set; } = [];
+    [JsonIgnore] public List<CondSetConfig> ConditionSets { get; set; } = [];
     public bool NoConditionCache = false;
 
     public List<string> EncodedProfiles = [];

@@ -8,6 +8,8 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using Bartender.UI.Utils;
 using Dalamud.Interface.Windowing;
 using static Bartender.ProfileConfig;
+using System.Collections.Generic;
+using Bartender.DataCommands;
 
 namespace Bartender;
 
@@ -28,12 +30,13 @@ public unsafe class Bartender : IDalamudPlugin
 
     public static RaptureHotbarModule* RaptureHotbar { get; private set; } = Framework.Instance()->UIModule->GetRaptureHotbarModule();
 
+    public Stack<DataCommand> CommandStack = [];
+    public Stack<DataCommand> UndoCommandStack = [];
+
     public Bartender(DalamudPluginInterface pluginInterface)
     {
         Plugin = this;
         DalamudApi.Initialize(this, pluginInterface);
-
-        IpcProvider.Init();
 
         Configuration = DalamudApi.PluginInterface.GetPluginConfig() as Configuration ?? new();
         Configuration.Initialize();
@@ -62,17 +65,50 @@ public unsafe class Bartender : IDalamudPlugin
     {
         try
         {
+            IpcProvider.Init();
+
+            Localization.Setup(DalamudApi.PluginInterface.UiLanguage);
             Game.Initialize();
             ConditionManager.Initialize();
             GearsetContextMenu.Initialize();
 
             isPluginReady = true;
+            IpcProvider.Initialized.SendMessage();
+            
         }
         catch (Exception e)
         {
             DalamudApi.PluginLog.Error($"Failed to load Bartender.\n{e}");
         }
     }
+
+    #region Commands
+
+    public static void Undo()
+    {
+        Plugin.CommandStack.Peek().Undo();
+        Plugin.UndoCommandStack.Push(Plugin.CommandStack.Pop());
+    }
+
+    public static void Redo()
+    {
+        Plugin.UndoCommandStack.Peek().Execute();
+        Plugin.CommandStack.Push(Plugin.UndoCommandStack.Pop());
+    }
+
+    public static bool AddAndExecuteCommand(DataCommand command)
+    {
+        if (command == null)
+            return true;
+
+        Plugin.CommandStack.Push(command);
+        Plugin.CommandStack.Peek().Execute();
+        Plugin.UndoCommandStack = [];
+        return true;
+    }
+
+    #endregion
+
 
     public void Reload()
     {
@@ -86,6 +122,7 @@ public unsafe class Bartender : IDalamudPlugin
     public void ToggleConfig() => UI.Toggle();
 
     #region Commands
+
     [Command("/bartender")]
     [HelpMessage("Open the configuration menu.")]
     public void ToggleConfig(string command, string arguments) => ToggleConfig();
@@ -136,6 +173,7 @@ public unsafe class Bartender : IDalamudPlugin
             }
         }
     }
+
     #endregion
 
     public static float RunTime => (float)DalamudApi.PluginInterface.LoadTimeDelta.TotalSeconds;
@@ -170,17 +208,17 @@ public unsafe class Bartender : IDalamudPlugin
     {
         if (!disposing) return;
 
+        IpcProvider.Disposed.SendMessage();
         IpcProvider.DeInit();
 
-        Configuration!.Save();
+        Configuration.Save();
 
         DalamudApi.Framework.Update -= Update;
         DalamudApi.PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfig;
         DalamudApi.PluginInterface.UiBuilder.Draw -= Draw;
-
         DalamudApi.Dispose();
 
-        IconManager!.Dispose(); 
+        IconManager.Dispose();
         UI.Dispose();
         Game.Dispose();
         GearsetContextMenu.Dispose();

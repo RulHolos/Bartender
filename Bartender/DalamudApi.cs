@@ -103,6 +103,7 @@ public class DalamudApi
 }
 
 #region PluginCommandManager
+
 public class PluginCommandManager<T> : IDisposable where T : IDalamudPlugin
 {
     private readonly T plugin;
@@ -168,9 +169,11 @@ public class PluginCommandManager<T> : IDisposable where T : IDalamudPlugin
         GC.SuppressFinalize(this);
     }
 }
+
 #endregion
 
 #region Attributes
+
 [AttributeUsage(AttributeTargets.Method)]
 public class AliasesAttribute : Attribute
 {
@@ -208,4 +211,5 @@ public class HelpMessageAttribute : Attribute
         HelpMessage = helpMsg;
     }
 }
+
 #endregion

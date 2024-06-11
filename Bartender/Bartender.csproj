@@ -3,19 +3,30 @@
   <Import Project="Dalamud.Plugin.Bootstrap.targets" />
 
   <PropertyGroup>
-    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
     <Description>Bartender Plugin.</Description>
     <PackageProjectUrl>https://github.com/AtaeKurri/Bartender</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
+    <AssemblyVersion>2.0.0</AssemblyVersion>
+    <FileVersion>2.0.0</FileVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="locals\en.json" />
+    <None Remove="locals\fr.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="images\icon.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <Visible>false</Visible>
+    </Content>
+    <Content Include="locals\en.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="locals\fr.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
