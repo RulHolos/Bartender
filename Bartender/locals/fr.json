@@ -10,6 +10,10 @@
     "btn.ClearHotbars": "Vider les barres utilisées",
 
     "text.Hotbar": "Barre de raccourcis #{0}",
+    "text.NoCondition": "Pas de conditions...",
+    "text.None": "---",
+    "text.HotbarsToLoad": "Barres à charger en exécutant \"/barload\"",
+    "text.Export": "Exporter",
 
     "selectable.DeleteProfile": "Supprimer le profil \"{0}\" de manière permanente",
 
@@ -17,11 +21,24 @@
     "tooltip.ImportProfile": "Importer un profil depuis le presse-papier",
     "tooltip.DeleteProfile": "Garder SHIFT enfoncé pour supprimer",
     "tooltip.DragAndSlide": "Vous pouvez glisser-déposer les icones pour les ré-arranger dans cette barre",
+    "tooltip.SwapToAbove": "Changer la position avec l'objet au dessus",
+    "tooltip.SwapToAboveCondition": "Changer la position du set de condition avec celle du dessus.\nChange aussi les conditions des profils qui utilisent les deux changées.",
+    "tooltip.SwapToBelow": "Changer la position avec l'objet en dessous",
+    "tooltip.SwapToBelowCondition": "Changer la position du set de condition avec celle en dessous.\nChange aussi les conditions des profils qui utilisent les deux changées.",
+    "tooltip.ConditionSetTutorial": "Les conditions à vérifier pour charger ce profil.\nLaissez cette case vide si vous ne voulez pas charger ce profil automatiquement.\nAttention: L'ordre des profils est important, ceux avec un ID plus haut seront chargés en dernier.",
 
     "notify.ProfileSaved": "Profil sauvegardé : {0}",
     "notify.CannotImport": "Impossible d'importer le profil",
     "notify.ProfileImported": "Profil importé : {0}",
     "notify.ProfileExported": "Profil exporté et copié dans le presse-papier : {0}",
+    "notify.ConditionSetExported": "Set de condition exporté et copié dans le presse-papier: {0}",
 
-    "conf.ExportOnDelete": "Exporter à la suppression"
+    "conf.ExportOnDelete": "Exporter à la suppression",
+
+    "cond.Delete": "Clique droit pour supprimer cette condition",
+    "cond.True": "Vrai",
+    "cond.False": "Faux",
+    "cond.Set": "Mis à (Jusqu'à cette condition): {0}",
+    "cond.Is": "EST",
+    "cond.IsNot": "N'EST PAS"
 }

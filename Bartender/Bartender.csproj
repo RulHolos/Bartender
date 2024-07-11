@@ -3,13 +3,18 @@
   <Import Project="Dalamud.Plugin.Bootstrap.targets" />
 
   <PropertyGroup>
-    <Version>2.0.0</Version>
-    <Description>Bartender Plugin.</Description>
+    <Version>1.0.0</Version>
+    <Description>Save and load hotbar profiles with chat commands and/or macros.
+Allows for automation too!</Description>
     <PackageProjectUrl>https://github.com/AtaeKurri/Bartender</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
-    <AssemblyVersion>2.0.0</AssemblyVersion>
-    <FileVersion>2.0.0</FileVersion>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <AssemblyName>Bartender</AssemblyName>
+    <RootNamespace>Bartender</RootNamespace>
+    <SignAssembly>False</SignAssembly>
+    <RepositoryUrl>https://github.com/AtaeKurri/Bartender</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +25,7 @@
   <ItemGroup>
     <Content Include="images\icon.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <Visible>false</Visible>
+        <Visible>true</Visible>
     </Content>
     <Content Include="locals\en.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -28,9 +33,5 @@
     <Content Include="locals\fr.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Dalamud.ContextMenu" Version="1.3.1" />
   </ItemGroup>
 </Project>

@@ -9,13 +9,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Numerics;
 using Bartender.UI.Utils;
+using Bartender.DataCommands;
 
 namespace Bartender.UI;
 
 public static class ConditionSetUI
 {
-    private static CondSetConfig? SelectedSet;
-    private static int? SelectedSetId;
+    public static CondSetConfig? SelectedSet;
+    public static int? SelectedSetId;
     private static readonly List<string> BinaryOperators = ["&&", " | | ", " ==", " !="];
 
     public static void Draw(Vector2 iconButtonSize)
@@ -37,6 +38,7 @@ public static class ConditionSetUI
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Create a new condition set");
 
+            /*
             if (Bartender.Configuration.ConditionSets.Count != 0)
             {
                 ImGui.SameLine();
@@ -50,6 +52,7 @@ public static class ConditionSetUI
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Export a condition set to the clipboard");
             }
+            */
 
             ImGui.SameLine();
             if (ImGuiComponents.IconButton(FontAwesomeIcon.FileImport))
@@ -83,7 +86,7 @@ public static class ConditionSetUI
         if (ImGui.BeginChild("conditionset_view", ImGuiHelpers.ScaledVector2(0), true))
         {
             if (SelectedSet != null)
-                DrawAutomationEditor(SelectedSet);
+                DrawAutomationEditor();
             ImGui.EndChild();
         }
     }
@@ -111,43 +114,64 @@ public static class ConditionSetUI
                 }
                 ImGui.PopStyleColor();
                 if (!ImGui.GetIO().KeyShift && ImGui.IsItemHovered())
-                    ImGui.SetTooltip("Hold SHIFT to delete.");
+                    ImGui.SetTooltip(Localization.Get("tooltip.DeleteProfile"));
                 ImGui.EndPopup();
             }
         }
     }
 
-    private static void DrawAutomationEditor(CondSetConfig set)
+    private static void DrawAutomationEditor()
     {
-        var debugSteps = ConditionManager.GetDebugSteps(set);
+        var debugSteps = ConditionManager.GetDebugSteps(SelectedSet);
         var comboSize = ImGui.CalcTextSize("AND").X;
 
+        ImGui.Columns(2, $"BartenderCondSetList-{SelectedSet}", false);
+
         ImGui.SetNextItemWidth(-1);
-        if (ImGui.InputText("##Name", ref set.Name, 32))
+        if (ImGui.InputText("##Name", ref SelectedSet.Name, 32))
             Bartender.Configuration.Save();
+
+        ImGui.NextColumn();
+
+        if (ImGui.Button("↑"))
+            ShiftConditionSet((int)SelectedSetId, false);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip(Localization.Get("tooltip.SwapToAboveCondition"));
+        ImGui.SameLine();
+        if (ImGui.Button("↓"))
+            ShiftConditionSet((int)SelectedSetId, true);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip(Localization.Get("tooltip.SwapToBelowCondition"));
+        ImGui.SameLine();
+        if (ImGui.Button(Localization.Get("text.Export")))
+        {
+            ImGui.SetClipboardText(CondSetConfig.ToBase64(SelectedSet!));
+            NotificationManager.Display(Localization.Get("notify.ConditionSetExported", SelectedSet!.Name));
+        }
 
         ImGui.Spacing();
         ImGui.Separator();
+        ImGui.Columns(1);
 
         ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(4, ImGui.GetStyle().ItemSpacing.Y));
 
-        if (set.Conditions.Count == 0)
+        if (SelectedSet.Conditions.Count == 0)
         {
             if (ImGuiComponents.IconButton(FontAwesomeIcon.Plus))
             {
-                set.Conditions.Add(new());
+                SelectedSet.Conditions.Add(new());
                 Bartender.Configuration.Save();
             }
             return;
         }
 
-        for (int i = 0; i < set.Conditions.Count; i++)
+        for (int i = 0; i < SelectedSet.Conditions.Count; i++)
         {
             ImGui.PushID(i);
 
             ImGui.BeginGroup();
             {
-                var condCfg = set.Conditions[i];
+                var condCfg = SelectedSet.Conditions[i];
                 var selectedCond = ConditionManager.GetCondition(condCfg.ID);
                 var selectedCat = ConditionManager.GetConditionCategory(selectedCond);
 
@@ -159,16 +183,16 @@ public static class ConditionSetUI
                     ImGuiEx.SetupSlider(true, ImGui.GetItemRectSize().Y + ImGui.GetStyle().ItemSpacing.Y, (hitInterval, increment, closing) =>
                     {
                         if (hitInterval)
-                            ConditionManager.ShiftCondition(set, condCfg, increment);
+                            ConditionManager.ShiftCondition(SelectedSet, condCfg, increment);
                     });
                 }
 
                 if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetTooltip("Right click to delete this condition.");
+                    ImGui.SetTooltip(Localization.Get("cond.Delete"));
                     if (ImGui.IsMouseReleased(ImGuiMouseButton.Right))
                     {
-                        set.Conditions.RemoveAt(i);
+                        SelectedSet.Conditions.RemoveAt(i);
                         Bartender.Configuration.Save();
                     }
                 }
@@ -194,7 +218,7 @@ public static class ConditionSetUI
                     if (debugSteps != null && i < debugSteps.Count)
                     {
                         var setSuccess = debugSteps[i];
-                        operatorTooltip += $"\nSet (Up to this condition): {(setSuccess ? "True" : "False")}";
+                        operatorTooltip += "\n" + Localization.Get("cond.Set", setSuccess ? Localization.Get("cond.True") : Localization.Get("cond.False"));
 
                         var setStatusCol = setSuccess ? 0x2000FF00u : 0x200000FFu;
                         ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), setStatusCol, ImGui.GetStyle().FrameRounding);
@@ -205,7 +229,7 @@ public static class ConditionSetUI
                 {
                     if (ImGuiComponents.IconButton(FontAwesomeIcon.Plus))
                     {
-                        set.Conditions.Add(new() { ID = "Cond" });
+                        SelectedSet.Conditions.Add(new() { ID = "Cond" });
                         Bartender.Configuration.Save();
                     }
                 }
@@ -220,9 +244,9 @@ public static class ConditionSetUI
                     Bartender.Configuration.Save();
                 }
 
-                var notTooltip = "IS" + (condCfg.Negate ? " NOT" : "");
+                var notTooltip = condCfg.Negate ? Localization.Get("cond.IsNot") : Localization.Get("cond.Is");
                 var success = ConditionManager.CheckCondition(condCfg.ID, condCfg.Arg, condCfg.Negate);
-                notTooltip += $"\nCondition: {(success ? "True" : "False")}";
+                notTooltip += $"\nCondition: {(success ? Localization.Get("cond.True") : Localization.Get("cond.False"))}";
 
                 var statusCol = success ? 0x2000FF00u : 0x200000FFu;
                 ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), statusCol, ImGui.GetStyle().FrameRounding);
@@ -311,6 +335,15 @@ public static class ConditionSetUI
 
                 ImGui.PopID();
             }
+        }
+    }
+
+    public static void ShiftConditionSet(int i, bool increment)
+    {
+        if (!increment ? i > 0 : i < (Bartender.Configuration.ConditionSets.Count - 1))
+        {
+            var j = (increment ? i + 1 : i - 1);
+            Bartender.AddAndExecuteCommand(new ShiftConditionSetCommand(i, j));
         }
     }
 }

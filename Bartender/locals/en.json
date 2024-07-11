@@ -10,6 +10,10 @@
     "btn.ClearHotbars": "Clear profile's hotbars",
 
     "text.Hotbar": "Hotbar #{0}",
+    "text.NoCondition": "No conditions...",
+    "text.None": "---",
+    "text.HotbarsToLoad": "Hotbars to load when using '/barload'",
+    "text.Export": "Export",
 
     "selectable.DeleteProfile": "Delete profile '{0}' permanently",
 
@@ -17,11 +21,24 @@
     "tooltip.ImportProfile": "Import a profile from the clipboard",
     "tooltip.DeleteProfile": "Hold SHIFT to delete",
     "tooltip.DragAndSlide": "You can drag and slide icons to re-arrange them inside this hotbar",
+    "tooltip.SwapToAbove": "Swap with the object above",
+    "tooltip.SwapToAboveCondition": "Swap Condition Set with the one above.\nAlso changes the selected sets on the profile who uses both of them.",
+    "tooltip.SwapToBelow": "Swap with the object below",
+    "tooltip.SwapToBelowCondition": "Swap Condition Set with the one below.\nAlso changes the selected sets on the profile who uses both of them.",
+    "tooltip.ConditionSetTutorial": "Condition Set to check. Will load this profile when the condition set is set to true.\nLeave this empty if you do not wish to load this profile automatically.\nWarning: Profile ordering matters: Profiles with an higher id will be higher in the priority list.",
 
     "notify.ProfileSaved": "Profile saved: {0}",
     "notify.CannotImport": "Cannot import profile",
     "notify.ProfileImported": "Profile imported: {0}",
-    "notify.ProfileExported": "Profile exported and copied to clipboard: {0}",
+    "notify.ProfileExported": "Profile exported and copied to the clipboard: {0}",
+    "notify.ConditionSetExported": "Condition Set exported and copied to the clipboard: {0}",
 
-    "conf.ExportOnDelete": "Export on Delete"
+    "conf.ExportOnDelete": "Export on Delete",
+
+    "cond.Delete": "Right click to delete this condition",
+    "cond.True": "True",
+    "cond.False": "False",
+    "cond.Set": "Set (Up to this condition): {0}",
+    "cond.Is": "IS",
+    "cond.IsNot": "IS NOT"
 }

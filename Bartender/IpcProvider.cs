@@ -9,7 +9,7 @@ namespace Bartender;
 
 public static class IpcProvider
 {
-    public const uint Breaking = 1;
+    public const uint Breaking = 3;
     public const uint Features = 0;
     public const uint Build = 0;
 

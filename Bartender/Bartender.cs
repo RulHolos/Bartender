@@ -33,7 +33,7 @@ public unsafe class Bartender : IDalamudPlugin
     public Stack<DataCommand> CommandStack = [];
     public Stack<DataCommand> UndoCommandStack = [];
 
-    public Bartender(DalamudPluginInterface pluginInterface)
+    public Bartender(IDalamudPluginInterface pluginInterface)
     {
         Plugin = this;
         DalamudApi.Initialize(this, pluginInterface);
@@ -46,6 +46,7 @@ public unsafe class Bartender : IDalamudPlugin
         Game = new();
 
         DalamudApi.Framework.Update += Update;
+        
 
         UI = new BartenderUI() {
 #if DEBUG
@@ -70,7 +71,6 @@ public unsafe class Bartender : IDalamudPlugin
             Localization.Setup(DalamudApi.PluginInterface.UiLanguage);
             Game.Initialize();
             ConditionManager.Initialize();
-            GearsetContextMenu.Initialize();
 
             isPluginReady = true;
             IpcProvider.Initialized.SendMessage();
@@ -79,6 +79,7 @@ public unsafe class Bartender : IDalamudPlugin
         catch (Exception e)
         {
             DalamudApi.PluginLog.Error($"Failed to load Bartender.\n{e}");
+            isPluginReady = false;
         }
     }
 
@@ -108,16 +109,6 @@ public unsafe class Bartender : IDalamudPlugin
     }
 
     #endregion
-
-
-    public void Reload()
-    {
-        Configuration = DalamudApi.PluginInterface.GetPluginConfig() as Configuration ?? new();
-        Configuration.Initialize();
-        Configuration.UpdateVersion();
-        Configuration.Save();
-        UI.Reload();
-    }
 
     public void ToggleConfig() => UI.Toggle();
 
@@ -164,9 +155,9 @@ public unsafe class Bartender : IDalamudPlugin
             HotbarSlot[] slots = profile.GetRow(i);
             for (uint slot = 0; slot < NUM_OF_SLOTS; slot++)
             {
-                HotBarSlot* gameSlot = RaptureHotbar->GetSlotById(Convert.ToUInt32(i), slot);
+                RaptureHotbarModule.HotbarSlot* gameSlot = RaptureHotbar->GetSlotById(Convert.ToUInt32(i), slot);
                 if (clear)
-                    gameSlot->Set(HotbarSlotType.Empty, 0);
+                    gameSlot->Set(RaptureHotbarModule.HotbarSlotType.Empty, 0);
                 else
                     gameSlot->Set(slots[slot].CommandType, slots[slot].CommandId);
                 RaptureHotbar->WriteSavedSlot(RaptureHotbar->ActiveHotbarClassJobId, Convert.ToUInt32(i), slot, gameSlot, false, DalamudApi.ClientState.IsPvP);
@@ -221,7 +212,6 @@ public unsafe class Bartender : IDalamudPlugin
         IconManager.Dispose();
         UI.Dispose();
         Game.Dispose();
-        GearsetContextMenu.Dispose();
     }
 
     public void Dispose()

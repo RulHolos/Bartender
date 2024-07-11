@@ -59,7 +59,7 @@ public class PetCondition : ICondition
     public string ID => "pe";
     public string ConditionName => "Pet Is Out";
     public int DisplayPriority => 0;
-    public unsafe bool Check(dynamic arg) => Framework.Instance()->GetUiModule()->GetPronounModule()->ResolvePlaceholder("<pet>", 0, 0) != null;
+    public unsafe bool Check(dynamic arg) => Framework.Instance()->GetUIModule()->GetPronounModule()->ResolvePlaceholder("<pet>", 0, 0) != null;
 }
 
 [MiscCondition]

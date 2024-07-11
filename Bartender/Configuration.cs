@@ -8,6 +8,7 @@ using Dalamud.Configuration;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using System.Text;
 using System.IO.Compression;
+using static FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule;
 
 namespace Bartender;
 
@@ -202,21 +203,6 @@ public class Configuration : IPluginConfiguration
             {
                 DalamudApi.PluginLog.Error("Failed to save.");
             }
-        }
-    }
-
-    public void LoadConfig(FileInfo file)
-    {
-        if (!file.Exists) return;
-
-        try
-        {
-            file.CopyTo(ConfigFile.FullName, true);
-            Bartender.Plugin.Reload();
-        }
-        catch (Exception e)
-        {
-            DalamudApi.PluginLog.Error(e, "Failed to load config.");
         }
     }
 }

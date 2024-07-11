@@ -1,3 +1,4 @@
+using Dalamud.Interface.ImGuiNotification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,11 @@ namespace Bartender;
 
 public static class NotificationManager
 {
-    public static void Display(string localizedString, Dalamud.Interface.Internal.Notifications.NotificationType notificationType, double durationInSeconds)
+    public static void Display(
+        string localizedString,
+        NotificationType notificationType = NotificationType.Success,
+        double durationInSeconds = 3
+    )
     {
         DalamudApi.NotificationManager.AddNotification(new Dalamud.Interface.ImGuiNotification.Notification()
         {

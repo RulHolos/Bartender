@@ -19,7 +19,7 @@ public class DalamudApi
     #region Services
 
     [PluginService]
-    public static DalamudPluginInterface PluginInterface { get; private set; }
+    public static IDalamudPluginInterface PluginInterface { get; private set; }
 
     [PluginService]
     public static IChatGui ChatGui { get; private set; }
@@ -69,13 +69,21 @@ public class DalamudApi
     [PluginService]
     public static ITargetManager TargetManager { get; private set; }
 
+    [PluginService]
+    public static IMarketBoard MarketBoard { get; private set; }
+
+    [PluginService]
+#pragma warning disable Dalamud001 // Le type est utilisé à des fins d’évaluation uniquement et est susceptible d’être modifié ou supprimé dans les futures mises à jour. Supprimez ce diagnostic pour continuer.
+    public static IConsole Console { get; private set; }
+#pragma warning restore Dalamud001 // Le type est utilisé à des fins d’évaluation uniquement et est susceptible d’être modifié ou supprimé dans les futures mises à jour. Supprimez ce diagnostic pour continuer.
+
     #endregion
 
     private static PluginCommandManager<IDalamudPlugin> PluginCommandManager;
 
     public DalamudApi() { }
     public DalamudApi(IDalamudPlugin plugin) => PluginCommandManager ??= new(plugin);
-    public DalamudApi(IDalamudPlugin plugin, DalamudPluginInterface pluginInterface)
+    public DalamudApi(IDalamudPlugin plugin, IDalamudPluginInterface pluginInterface)
     {
         if (!pluginInterface.Inject(this))
         {
@@ -98,7 +106,7 @@ public class DalamudApi
         throw new InvalidOperationException();
     }
 
-    public static void Initialize(IDalamudPlugin plugin, DalamudPluginInterface pluginInterface) => _ = new DalamudApi(plugin, pluginInterface);
+    public static void Initialize(IDalamudPlugin plugin, IDalamudPluginInterface pluginInterface) => _ = new DalamudApi(plugin, pluginInterface);
     public static void Dispose() => PluginCommandManager?.Dispose();
 }
 
@@ -138,7 +146,7 @@ public class PluginCommandManager<T> : IDisposable where T : IDalamudPlugin
 
     private IEnumerable<(string, CommandInfo)> GetCommandInfoTuple(MethodInfo method)
     {
-        var handlerDelegate = (CommandInfo.HandlerDelegate)Delegate.CreateDelegate(typeof(CommandInfo.HandlerDelegate), plugin, method);
+        var handlerDelegate = (IReadOnlyCommandInfo.HandlerDelegate)Delegate.CreateDelegate(typeof(IReadOnlyCommandInfo.HandlerDelegate), plugin, method);
 
         var command = handlerDelegate.Method.GetCustomAttribute<CommandAttribute>();
         var aliases = handlerDelegate.Method.GetCustomAttribute<AliasesAttribute>();

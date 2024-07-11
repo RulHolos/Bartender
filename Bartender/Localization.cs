@@ -9,21 +9,24 @@ namespace Bartender;
 
 public static class Localization
 {
-    public static readonly string[] SupportedLangCodes = { "en", "fr" };
+    private static readonly string[] SupportedLangCodes = { "en", "fr" };
     private static Dictionary<string, string> LangDict;
     private static Dictionary<string, string> FallbackDict;
 
     private const string FallbackLangCode = "en";
     private const string LocDirectory = "locals";
 
-    public static string LangCode { get; private set; } = FallbackLangCode;
+    private static string LangCode { get; set; } = FallbackLangCode;
 
     public static void Setup(string langCode)
     {
+        if (LangDict != null)
+            return;
+
         if (SupportedLangCodes.Contains(langCode.ToLower()))
             LangCode = langCode;
         else
-            langCode = FallbackLangCode;
+            LangCode = FallbackLangCode;
 
         try
         {

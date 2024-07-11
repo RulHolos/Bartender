@@ -8,99 +8,143 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using Bartender.UI.Utils;
 using Dalamud.Interface.Components;
 using System.Linq;
-using FFXIVClientStructs.FFXIV.Client.Game;
 using Bartender.DataCommands;
+using Dalamud.Interface;
+using Dalamud.Interface.ImGuiNotification;
+using static FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule;
 
 namespace Bartender.UI;
 
-public class ProfileUI : IDisposable
+public static class ProfileUI
 {
-    public ProfileConfig Config { get; private set; }
+    public static ProfileConfig? SelectedProfile;
+    public static int? SelectedProfileId;
 
-    private int id;
-    public int ID
+    public static void Draw(Vector2 iconButtonSize)
     {
-        get => id;
-        set
+        ImGui.BeginGroup();
         {
-            id = value;
-            Config = Bartender.Configuration.ProfileConfigs[value];
+            if (ImGui.BeginChild("profile_list", ImGuiHelpers.ScaledVector2(240, 0) - iconButtonSize with { X = 0 }, true))
+            {
+                DrawProfileList();
+                ImGui.EndChild();
+            }
+
+            if (DalamudApi.ClientState.IsLoggedIn != false)
+            {
+                if (ImGuiComponents.IconButton(FontAwesomeIcon.Plus))
+                {
+                    AddProfile(new ProfileConfig());
+                }
+                if (ImGui.IsItemHovered())
+                    ImGui.SetTooltip(Localization.Get("tooltip.CreateProfile"));
+                ImGui.SameLine();
+            }
+
+            if (ImGuiComponents.IconButton(FontAwesomeIcon.FileImport))
+            {
+                string import;
+                try { import = ImGui.GetClipboardText(); }
+                catch { import = string.Empty; }
+                ImportProfile(import);
+            }
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip(Localization.Get("tooltip.ImportProfile"));
+            }
+        }
+        ImGui.EndGroup();
+
+        ImGui.SameLine();
+        if (ImGui.BeginChild("profile_view", ImGuiHelpers.ScaledVector2(0), true))
+        {
+            if (SelectedProfile != null)
+                DrawProfileEditor();
+            ImGui.EndChild();
         }
     }
 
-    public bool Showing = false;
-
-    public ProfileUI(int n)
+    public static void DrawProfileList()
     {
-        ID = n;
+        for (int i = 0; i < Bartender.Configuration.ProfileConfigs.Count; i++)
+        {
+            ProfileConfig profile = Bartender.Configuration.ProfileConfigs[i];
+
+            if (ImGui.Selectable($"#{i + 1}: {profile.Name}", SelectedProfile == profile))
+            {
+                SelectedProfile = profile;
+                SelectedProfileId = i;
+            }
+            if (ImGui.BeginPopupContextItem())
+            {
+                ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetColorU32(ImGui.GetIO().KeyShift ? ImGuiCol.Text : ImGuiCol.TextDisabled));
+                if (ImGui.Selectable(Localization.Get("selectable.DeleteProfile", profile.Name)) && ImGui.GetIO().KeyShift)
+                {
+                    RemoveProfile(i);
+                    if (SelectedProfile == profile)
+                        SelectedProfile = null;
+                }
+                ImGui.PopStyleColor();
+                if (!ImGui.GetIO().KeyShift && ImGui.IsItemHovered())
+                    ImGui.SetTooltip(Localization.Get("tooltip.DeleteProfile"));
+                ImGui.EndPopup();
+            }
+        }
     }
 
-    public void DrawConfig(BartenderUI mainUI, int i)
+    public static void DrawProfileEditor()
     {
-        ImGui.Columns(2, $"BartenderList-{i}", false);
-        ImGui.PushID(i);
-
-        ImGui.Text($"#{i + 1}");
-        ImGui.SameLine();
-
-        float textX = ImGui.GetCursorPosX();
+        ImGui.Columns(2, $"BartenderList-{SelectedProfileId}", false);
+        ImGui.PushID((int)SelectedProfileId);
 
         ImGui.SetNextItemWidth(-1);
-        if (ImGui.InputText("##Name", ref Config.Name, 32))
+        if (ImGui.InputText("##Name", ref SelectedProfile.Name, 32))
             Bartender.Configuration.Save();
 
         ImGui.NextColumn();
 
         if (ImGui.Button("↑"))
-            mainUI.ShiftProfile(i, false);
+            ShiftProfile((int)SelectedProfileId, false);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Swap profile position with the one above.");
+            ImGui.SetTooltip(Localization.Get("tooltip.SwapToAbove"));
         ImGui.SameLine();
         if (ImGui.Button("↓"))
-            mainUI.ShiftProfile(i, true);
+            ShiftProfile((int)SelectedProfileId, true);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Swap profile position with the one below.");
+            ImGui.SetTooltip(Localization.Get("tooltip.SwapToBelow"));
         ImGui.SameLine();
-        if (ImGui.Button("Export"))
+        if (ImGui.Button(Localization.Get("text.Export")))
         {
-            ImGui.SetClipboardText(ProfileConfig.ToBase64(Config));
-            DalamudApi.NotificationManager.AddNotification(new Dalamud.Interface.ImGuiNotification.Notification()
-            {
-                Content = Localization.Get("notify.ProfileExported", Config.Name),
-                Type = Dalamud.Interface.Internal.Notifications.NotificationType.Success,
-                Minimized = false,
-                InitialDuration = TimeSpan.FromSeconds(3)
-            });
+            ImGui.SetClipboardText(ProfileConfig.ToBase64(SelectedProfile));
+            NotificationManager.Display(Localization.Get("notify.ProfileExported", SelectedProfile.Name));
         }
-        var preview = ((Config.ConditionSet >= 0) && (Config.ConditionSet < Bartender.Configuration.ConditionSets.Count))
-            ? $"[{Config.ConditionSet + 1}] {Bartender.Configuration.ConditionSets[Config.ConditionSet].Name}" : "No conditions...";
+        var preview = ((SelectedProfile.ConditionSet >= 0) && (SelectedProfile.ConditionSet < Bartender.Configuration.ConditionSets.Count))
+            ? $"[{SelectedProfile.ConditionSet + 1}] {Bartender.Configuration.ConditionSets[SelectedProfile.ConditionSet].Name}" : Localization.Get("text.NoCondition");
         ImGui.SameLine();
         ImGui.SetNextItemWidth(150);
         if (ImGui.BeginCombo("##Condition", preview))
         {
-            if (ImGui.Selectable("None", Config.ConditionSet == -1))
+            if (ImGui.Selectable(Localization.Get("text.None"), SelectedProfile.ConditionSet == -1))
             {
-                Bartender.AddAndExecuteCommand(new ChangeConditionSetCommand(Config.ConditionSet, -1, Config));
+                Bartender.AddAndExecuteCommand(new ChangeConditionSetCommand(SelectedProfile.ConditionSet, -1, SelectedProfile));
             }
             for (int id = 0; id < Bartender.Configuration.ConditionSets.Count; id++)
             {
-                if (ImGui.Selectable($"[{id + 1}] {Bartender.Configuration.ConditionSets[id].Name}", id == Config.ConditionSet))
+                if (ImGui.Selectable($"[{id + 1}] {Bartender.Configuration.ConditionSets[id].Name}", id == SelectedProfile.ConditionSet))
                 {
-                    Bartender.AddAndExecuteCommand(new ChangeConditionSetCommand(Config.ConditionSet, id, Config));
+                    Bartender.AddAndExecuteCommand(new ChangeConditionSetCommand(SelectedProfile.ConditionSet, id, SelectedProfile));
                 }
             }
             ImGui.EndCombo();
         }
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Condition Set to check. Will load this profile when the condition set is set to true.\n" +
-                "Leave this empty if you do not wish to load this profile automatically.\n" +
-                "Warning: Profile ordering matters: Profiles with an higher id will be higher in the priority list.");
+            ImGui.SetTooltip(Localization.Get("tooltip.ConditionSetTutorial"));
 
         ImGui.Separator();
         ImGui.NextColumn();
         ImGui.Columns(1);
 
-        ImGui.Text("Hotbars to load when using '/barload'");
+        ImGui.Text(Localization.Get("text.HotbarsToLoad"));
 
         int num = 1;
         foreach (BarNums bar in Enum.GetValues(typeof(BarNums)))
@@ -112,10 +156,10 @@ public class ProfileUI : IDisposable
             CheckboxFlags($"#{num}", bar);
             num++;
         }
-        
+
 #if DEBUG
         ImGui.SameLine();
-        ImGui.Text($"=> {((int)Bartender.Configuration.ProfileConfigs[ID].UsedBars)}");
+        ImGui.Text($"=> {((int)Bartender.Configuration.ProfileConfigs[(int)SelectedProfileId].UsedBars)}");
 #endif
         ImGui.Spacing();
 
@@ -123,21 +167,21 @@ public class ProfileUI : IDisposable
             SaveProfile();
         ImGui.SameLine();
         if (ImGui.Button(Localization.Get("btn.LoadProfile")))
-            Bartender.Plugin.BarLoad("/barload", Config.Name);
+            Bartender.Plugin.BarLoad("/barload", SelectedProfile.Name);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip($"Execute '/barload {Config.Name}'");
-        
+            ImGui.SetTooltip($"Execute '/barload {SelectedProfile.Name}'");
+
         if (ImGui.Button(Localization.Get("btn.ClearHotbars")))
-            Bartender.Plugin.BarClear("/barclear", Config.Name);
+            Bartender.Plugin.BarClear("/barclear", SelectedProfile.Name);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip($"Execute '/barclear {Config.Name}'");
+            ImGui.SetTooltip($"Execute '/barclear {SelectedProfile.Name}'");
 
         ImGui.Spacing();
         ImGui.Separator();
         for (int s = 0; s < Bartender.NUM_OF_BARS; s++)
         {
             BarNums flag = (BarNums)(1 << s);
-            if ((Config.UsedBars & flag) != flag)
+            if ((SelectedProfile.UsedBars & flag) != flag)
                 continue;
             DrawHotbar(s);
         }
@@ -145,7 +189,49 @@ public class ProfileUI : IDisposable
         ImGui.PopID();
     }
 
-    private unsafe void DrawHotbar(int hotbar)
+    public static void ImportProfile(string import)
+    {
+        ProfileConfig? config = null;
+        try { config = ProfileConfig.FromBase64(import); }
+        catch { }
+
+        if (config == null || !AddProfile(config))
+        {
+            NotificationManager.Display(Localization.Get("notify.CannotImport"), NotificationType.Error);
+            return;
+        }
+
+        NotificationManager.Display(Localization.Get("notify.ProfileImported", config.Name));
+    }
+
+    public static bool AddProfile(ProfileConfig? cfg)
+    {
+        if (cfg == null)
+            return false;
+        return Bartender.AddAndExecuteCommand(new AddProfileCommand(cfg));
+    }
+
+    public static void RemoveProfile(int i)
+    {
+        if (Bartender.Configuration.ExportOnDelete)
+        {
+            ImGui.SetClipboardText(ProfileConfig.ToBase64(SelectedProfile));
+            NotificationManager.Display(Localization.Get("notify.ProfileExported", SelectedProfile.Name));
+        }
+
+        Bartender.AddAndExecuteCommand(new RemoveProfileCommand(SelectedProfile));
+    }
+
+    public static void ShiftProfile(int i, bool increment)
+    {
+        if (!increment ? i > 0 : i < (Bartender.Configuration.ProfileConfigs.Count - 1))
+        {
+            var j = (increment ? i + 1 : i - 1);
+            Bartender.AddAndExecuteCommand(new ShiftProfileCommand(i, j));
+        }
+    }
+
+    private static void DrawHotbar(int hotbar)
     {
         ImGui.Text(Localization.Get("text.Hotbar", hotbar + 1));
         if (ImGui.IsItemHovered())
@@ -156,9 +242,9 @@ public class ProfileUI : IDisposable
             {
                 ImGui.PushID(j);
 
-                var action = Config.Slots[hotbar, j];
+                var action = SelectedProfile.Slots[hotbar, j];
                 var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(action.Icon));
-                ImGui.ImageButton(icon.ImGuiHandle, new Vector2(35, 35), default, new Vector2(1f, 1f), 0, new Vector4(0));
+                ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new Vector2(35, 35), default, new Vector2(1f, 1f), 0, new Vector4(0));
                 if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
                 {
                     ImGuiEx.SetupSlider(false, ImGui.GetItemRectSize().X + ImGui.GetStyle().ItemSpacing.X, (hitInterval, increment, closing) =>
@@ -187,53 +273,38 @@ public class ProfileUI : IDisposable
         ImGui.Separator();
     }
 
-    private void CheckboxFlags(string label, BarNums flags)
+    private static void CheckboxFlags(string label, BarNums flags)
     {
-        int flagsValue = (int)Bartender.Configuration.ProfileConfigs[ID].UsedBars;
+        int flagsValue = (int)Bartender.Configuration.ProfileConfigs[(int)SelectedProfileId].UsedBars;
         if (ImGui.CheckboxFlags(label, ref flagsValue, (int)flags))
         {
-            Bartender.Configuration.ProfileConfigs[ID].UsedBars = (BarNums)flagsValue;
-            Bartender.Configuration.Save();
+            Bartender.AddAndExecuteCommand(
+                new ChangeUsedBarsCommand(Bartender.Configuration.ProfileConfigs[(int)SelectedProfileId].UsedBars, (BarNums)flagsValue, (int)SelectedProfileId)
+            );
         }
     }
 
-    private unsafe void SaveProfile()
+    public static unsafe void SaveProfile()
     {
+        HotbarSlot[,] generatedSlots = new HotbarSlot[Bartender.NUM_OF_BARS, Bartender.NUM_OF_SLOTS];
         for (uint hotbars = 0; hotbars < Bartender.NUM_OF_BARS; hotbars++)
         {
             for (uint i = 0; i < Bartender.NUM_OF_SLOTS; i++)
             {
-                HotBarSlot* slot = Bartender.RaptureHotbar->GetSlotById(hotbars, i);
+                RaptureHotbarModule.HotbarSlot* slot = Bartender.RaptureHotbar->GetSlotById(hotbars, i);
                 if (slot->CommandType == HotbarSlotType.Empty)
-                    slot->Icon = 0;
+                    slot->IconId = 0;
                 string fullText = slot->PopUpHelp.ToString();
-                Bartender.Configuration.ProfileConfigs[ID].Slots[hotbars, i] =
-                    new HotbarSlot(slot->CommandId, slot->CommandType, slot->Icon, fullText);
+                generatedSlots[hotbars, i] = new HotbarSlot(slot->CommandId, slot->CommandType, (int)slot->IconId, fullText);
             }
         }
-        Bartender.Configuration.Save();
-        NotificationManager.Display(Localization.Get("notify.ProfileSaved", Config.Name), Dalamud.Interface.Internal.Notifications.NotificationType.Success, 3);
+        if (!Bartender.AddAndExecuteCommand(new SaveProfileCommand((int)SelectedProfileId, generatedSlots)))
+            return;
+        NotificationManager.Display(Localization.Get("notify.ProfileSaved", SelectedProfile.Name), NotificationType.Success, 3);
     }
 
-    private void ShiftIcon(int profileId, HotbarSlot slot, bool increment)
+    private static void ShiftIcon(int profileId, HotbarSlot slot, bool increment)
     {
-        HotbarSlot[] hotbar = Config.GetRow(profileId);
-        int i = hotbar.ToList().IndexOf(slot);
-        if (!increment ? i > 0 : i < (hotbar.Length - 1))
-        {
-            int j = (increment ? i + 1 : i - 1);
-            HotbarSlot oldSlot = hotbar[i];
-            HotbarSlot newSlot = hotbar[j];
-            hotbar[i] = newSlot;
-            hotbar[j] = oldSlot;
-
-            Config.SetRow(hotbar, profileId);
-            Bartender.Configuration.Save();
-        }
-    }
-
-    public void Dispose()
-    {
-        return;
+        Bartender.AddAndExecuteCommand(new ShiftIconCommand(SelectedProfile, slot, increment, profileId));
     }
 }
