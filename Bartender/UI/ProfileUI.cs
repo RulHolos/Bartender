@@ -12,6 +12,8 @@ using Bartender.DataCommands;
 using Dalamud.Interface;
 using Dalamud.Interface.ImGuiNotification;
 using static FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule;
+using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
 
 namespace Bartender.UI;
 
@@ -256,6 +258,8 @@ public static class ProfileUI
                 }
                 if (ImGui.IsItemHovered() && action.CommandType != HotbarSlotType.Empty)
                 {
+                    //ImGuiHelpers.CompileSeStringWrapped(action.Name);
+                    //ImGuiHelpers.SeStringWrapped(new SeString(new TextPayload(action.Name)).Encode());
                     ImGui.SetTooltip($"{action.Name}");
                     ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
                 }
