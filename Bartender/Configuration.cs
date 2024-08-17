@@ -152,6 +152,7 @@ public class Configuration : IPluginConfiguration
     {
         Version? version = Assembly.GetExecutingAssembly().GetName().Version;
         PluginVersion = $"{version.Major}.{version.Minor}.{version.Build}";
+        Save();
     }
     public bool CheckVersion() => PluginVersion == Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 
