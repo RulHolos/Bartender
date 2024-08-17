@@ -246,7 +246,8 @@ public static class ProfileUI
 
                 var action = SelectedProfile.Slots[hotbar, j];
                 var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(action.Icon));
-                ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new Vector2(35, 35), default, new Vector2(1f, 1f), 0, new Vector4(0));
+                Vector4 slotColor = action.Transparent ? new Vector4(0, 0, 0, 1f) : new Vector4(0);
+                ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new Vector2(35, 35), default, new Vector2(1f, 1f), 0, slotColor);
                 if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
                 {
                     ImGuiEx.SetupSlider(false, ImGui.GetItemRectSize().X + ImGui.GetStyle().ItemSpacing.X, (hitInterval, increment, closing) =>
@@ -256,11 +257,23 @@ public static class ProfileUI
                         ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEW);
                     });
                 }
+                else if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
+                {
+                    ToggleSlotTransparent(hotbar, action);
+                }
+                else if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && action.CommandType != HotbarSlotType.Empty)
+                {
+                    SetSlotAsEmpty(hotbar, action);
+                }
                 if (ImGui.IsItemHovered() && action.CommandType != HotbarSlotType.Empty)
                 {
-                    //ImGuiHelpers.CompileSeStringWrapped(action.Name);
-                    //ImGuiHelpers.SeStringWrapped(new SeString(new TextPayload(action.Name)).Encode());
-                    ImGui.SetTooltip($"{action.Name}");
+                    ImGui.SetTooltip($"{action.Name + (action.Transparent ? "\nTransparent slot" : "")}\n\n[Right-click to empty]\n[Shift + Right-click to toggle transparency]");
+                    ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+                }
+                else if (ImGui.IsItemHovered())
+                {
+                    string text = action.Transparent ? "Transparent slot" : "Non-Transparent slot";
+                    ImGui.SetTooltip($"{text}\n\n[Shift + Right-click to toggle transparency]");
                     ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
                 }
                     
@@ -310,5 +323,15 @@ public static class ProfileUI
     private static void ShiftIcon(int profileId, HotbarSlot slot, bool increment)
     {
         Bartender.AddAndExecuteCommand(new ShiftIconCommand(SelectedProfile, slot, increment, profileId));
+    }
+
+    private static void ToggleSlotTransparent(int profileId, HotbarSlot slot)
+    {
+        Bartender.AddAndExecuteCommand(new ToggleSlotTransparencyCommand(SelectedProfile, slot, profileId));
+    }
+
+    private static void SetSlotAsEmpty(int profileId, HotbarSlot slot)
+    {
+        Bartender.AddAndExecuteCommand(new SetSlotAsEmptyCommand(SelectedProfile, slot, profileId));
     }
 }

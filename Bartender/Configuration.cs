@@ -12,12 +12,13 @@ using static FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule;
 
 namespace Bartender;
 
-public struct HotbarSlot(uint id, HotbarSlotType type, int icon, string name)
+public struct HotbarSlot(uint id, HotbarSlotType type, int icon, string name, bool transparent = false)
 {
     public string Name = name;
     public uint CommandId = id;
     public HotbarSlotType CommandType = type;
     public int Icon = icon;
+    public bool Transparent = transparent;
 }
 
 public class ProfileConfig

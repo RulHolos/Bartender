@@ -158,6 +158,8 @@ public unsafe class Bartender : IDalamudPlugin
                 RaptureHotbarModule.HotbarSlot* gameSlot = RaptureHotbar->GetSlotById(Convert.ToUInt32(i), slot);
                 if (clear)
                     gameSlot->Set(RaptureHotbarModule.HotbarSlotType.Empty, 0);
+                else if (slots[slot].Transparent)
+                    continue;
                 else
                     gameSlot->Set(slots[slot].CommandType, slots[slot].CommandId);
                 RaptureHotbar->WriteSavedSlot(RaptureHotbar->ActiveHotbarClassJobId, Convert.ToUInt32(i), slot, gameSlot, false, DalamudApi.ClientState.IsPvP);
