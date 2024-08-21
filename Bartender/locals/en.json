@@ -26,6 +26,10 @@
     "tooltip.SwapToBelow": "Swap with the object below",
     "tooltip.SwapToBelowCondition": "Swap Condition Set with the one below.\nAlso changes the selected sets on the profile who uses both of them.",
     "tooltip.ConditionSetTutorial": "Condition Set to check. Will load this profile when the condition set is set to true.\nLeave this empty if you do not wish to load this profile automatically.\nWarning: Profile ordering matters: Profiles with an higher id will be higher in the priority list.",
+    "tooltip.TransparentSlot": "Transparent slot",
+    "tooltip.NonTransparentSlot": "Non-Transparent slot",
+    "tooltip.EmptySlot": "Right-click to empty",
+    "tooltip.ToggleTransparency": "Shift + Right-click to toggle transparency",
 
     "notify.ProfileSaved": "Profile saved: {0}",
     "notify.CannotImport": "Cannot import profile",

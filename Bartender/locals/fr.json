@@ -26,6 +26,10 @@
     "tooltip.SwapToBelow": "Changer la position avec l'objet en dessous",
     "tooltip.SwapToBelowCondition": "Changer la position du set de condition avec celle en dessous.\nChange aussi les conditions des profils qui utilisent les deux changées.",
     "tooltip.ConditionSetTutorial": "Les conditions à vérifier pour charger ce profil.\nLaissez cette case vide si vous ne voulez pas charger ce profil automatiquement.\nAttention: L'ordre des profils est important, ceux avec un ID plus haut seront chargés en dernier.",
+    "tooltip.TransparentSlot": "Case Transparente",
+    "tooltip.NonTransparentSlot": "Case Non Transparente",
+    "tooltip.EmptySlot": "Clic-droit pour vider la case",
+    "tooltip.ToggleTransparency": "Shift + Clic-droit pour basculer la transparence",
 
     "notify.ProfileSaved": "Profil sauvegardé : {0}",
     "notify.CannotImport": "Impossible d'importer le profil",

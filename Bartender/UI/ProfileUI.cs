@@ -267,13 +267,16 @@ public static class ProfileUI
                 }
                 if (ImGui.IsItemHovered() && action.CommandType != HotbarSlotType.Empty)
                 {
-                    ImGui.SetTooltip($"{action.Name + (action.Transparent ? "\nTransparent slot" : "")}\n\n[Right-click to empty]\n[Shift + Right-click to toggle transparency]");
+                    ImGui.SetTooltip($"{action.Name + (action.Transparent ?
+                        $"\n({Localization.Get("tooltip.TransparentSlot")})"
+                        : "")}" +
+                        $"\n\n[{Localization.Get("tooltip.EmptySlot")}]\n[{Localization.Get("tooltip.ToggleTransparency")}]");
                     ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
                 }
                 else if (ImGui.IsItemHovered())
                 {
-                    string text = action.Transparent ? "Transparent slot" : "Non-Transparent slot";
-                    ImGui.SetTooltip($"{text}\n\n[Shift + Right-click to toggle transparency]");
+                    string text = action.Transparent ? Localization.Get("tooltip.TransparentSlot") : Localization.Get("tooltip.NonTransparentSlot");
+                    ImGui.SetTooltip($"({text})\n\n[{Localization.Get("tooltip.ToggleTransparency")}]");
                     ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
                 }
                     
