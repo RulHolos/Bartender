@@ -38,6 +38,7 @@
     "notify.ConditionSetExported": "Condition Set exported and copied to the clipboard: {0}",
 
     "conf.ExportOnDelete": "Export on Delete",
+    "conf.PopulateWhenCreatingProfile": "Populate newly created profiles with current bars",
 
     "cond.Delete": "Right click to delete this condition",
     "cond.True": "True",

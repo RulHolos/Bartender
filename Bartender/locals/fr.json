@@ -38,6 +38,7 @@
     "notify.ConditionSetExported": "Set de condition exporté et copié dans le presse-papier: {0}",
 
     "conf.ExportOnDelete": "Exporter à la suppression",
+    "conf.PopulateWhenCreatingProfile": "Remplir les profils nouvellement créés avec les barres actuelles",
 
     "cond.Delete": "Clique droit pour supprimer cette condition",
     "cond.True": "Vrai",

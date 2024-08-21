@@ -84,6 +84,8 @@ public class BartenderUI : Window, IDisposable
     {
         if (ImGui.Checkbox(Localization.Get("conf.ExportOnDelete"), ref Bartender.Configuration.ExportOnDelete))
             Bartender.Configuration.Save();
+        if (ImGui.Checkbox(Localization.Get("conf.PopulateWhenCreatingProfile"), ref Bartender.Configuration.PopulateWhenCreatingProfile))
+            Bartender.Configuration.Save();
 
         /*
         ImGui.SameLine();

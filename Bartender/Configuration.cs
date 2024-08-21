@@ -167,6 +167,7 @@ public class Configuration : IPluginConfiguration
     public List<string> EncodedProfiles = [];
     public List<string> EncodedConditionSets = [];
     public bool ExportOnDelete = false;
+    public bool PopulateWhenCreatingProfile = false;
     public bool UsePenumbra = true;
 
     public void Initialize()

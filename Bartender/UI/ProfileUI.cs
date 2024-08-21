@@ -36,7 +36,10 @@ public static class ProfileUI
             {
                 if (ImGuiComponents.IconButton(FontAwesomeIcon.Plus))
                 {
-                    AddProfile(new ProfileConfig());
+                    ProfileConfig newProfile = new();
+                    if (Bartender.Configuration.PopulateWhenCreatingProfile)
+                        newProfile.Slots = PopulateProfileHotbars();
+                    AddProfile(newProfile);
                 }
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip(Localization.Get("tooltip.CreateProfile"));
@@ -304,7 +307,7 @@ public static class ProfileUI
         }
     }
 
-    public static unsafe void SaveProfile()
+    public static unsafe HotbarSlot[,] PopulateProfileHotbars()
     {
         HotbarSlot[,] generatedSlots = new HotbarSlot[Bartender.NUM_OF_BARS, Bartender.NUM_OF_SLOTS];
         for (uint hotbars = 0; hotbars < Bartender.NUM_OF_BARS; hotbars++)
@@ -318,7 +321,12 @@ public static class ProfileUI
                 generatedSlots[hotbars, i] = new HotbarSlot(slot->CommandId, slot->CommandType, (int)slot->IconId, fullText);
             }
         }
-        if (!Bartender.AddAndExecuteCommand(new SaveProfileCommand((int)SelectedProfileId, generatedSlots)))
+        return generatedSlots;
+    }
+
+    public static unsafe void SaveProfile()
+    {
+        if (!Bartender.AddAndExecuteCommand(new SaveProfileCommand((int)SelectedProfileId, PopulateProfileHotbars())))
             return;
         NotificationManager.Display(Localization.Get("notify.ProfileSaved", SelectedProfile.Name), NotificationType.Success, 3);
     }
