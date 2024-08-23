@@ -11,7 +11,7 @@ Please create an [issue](https://github.com/AtaeKurri/Bartender/issues/new) if y
 * A GUI to save/load hotbar profiles.
 * `/barload <profile name>` is used to load (and populate) one or multiple hotbars with the saved icons.
 * `/barclear <profile name>` clears the bars used by the profile of any icons.
-
+* Automation of profile loading with conditions.
 
 ## Planned features
 

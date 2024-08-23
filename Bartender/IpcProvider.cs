@@ -21,6 +21,7 @@ public static class IpcProvider
     public static ICallGateProvider<string[]>? GetProfiles;
     public static ICallGateProvider<string[]>? GetConditionSets;
     public static ICallGateProvider<int, bool>? CheckConditionSet;
+    public static ICallGateProvider<Dictionary<string, string>>? GetCurrentLangDict;
 
     internal static void Init()
     {
@@ -38,6 +39,9 @@ public static class IpcProvider
 
         CheckConditionSet = DalamudApi.PluginInterface.GetIpcProvider<int, bool>($"{Namespace}.CheckConditionSet");
         CheckConditionSet.RegisterFunc(i => i >= 0 && i < Bartender.Configuration.ConditionSets.Count && ConditionManager.CheckConditionSet(i));
+
+        GetCurrentLangDict = DalamudApi.PluginInterface.GetIpcProvider<Dictionary<string, string>>($"{Namespace}.GetCurrentLangDict");
+        GetCurrentLangDict.RegisterFunc(() => Localization.LangDict);
     }
 
     internal static void DeInit()
@@ -46,5 +50,6 @@ public static class IpcProvider
         GetProfiles.UnregisterFunc();
         GetConditionSets?.UnregisterFunc();
         CheckConditionSet?.UnregisterFunc();
+        GetCurrentLangDict?.UnregisterFunc();
     }
 }

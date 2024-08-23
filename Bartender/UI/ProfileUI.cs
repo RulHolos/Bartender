@@ -273,7 +273,7 @@ public static class ProfileUI
                     ImGui.SetTooltip($"{action.Name + (action.Transparent ?
                         $"\n({Localization.Get("tooltip.TransparentSlot")})"
                         : "")}" +
-                        $"\n\n[{Localization.Get("tooltip.EmptySlot")}]\n[{Localization.Get("tooltip.ToggleTransparency")}]");
+                        $"\n\n[{Localization.Get("tooltip.HoldToShift")}]\n[{Localization.Get("tooltip.EmptySlot")}]\n[{Localization.Get("tooltip.ToggleTransparency")}]");
                     ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
                 }
                 else if (ImGui.IsItemHovered())

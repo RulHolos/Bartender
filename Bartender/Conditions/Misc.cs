@@ -24,6 +24,33 @@ public class LoggedInCondition : ICondition
 }
 
 [MiscCondition]
+public class TargetCondition : ICondition, IDrawableCondition, IArgCondition
+{
+    public string ID => "ta";
+    public string ConditionName => "Is Targeting";
+    public int DisplayPriority => 0;
+    public bool Check(dynamic arg)
+    {
+        return (int)arg switch
+        {
+            0 => DalamudApi.TargetManager.Target != null,
+            1 => DalamudApi.TargetManager.FocusTarget != null,
+            2 => DalamudApi.TargetManager.SoftTarget != null,
+            _ => false
+        };
+    }
+    public string GetTooltip(CondConfig cndCfg) => null;
+    public string GetSelectableTooltip(CondConfig cndCfg) => null;
+    public void Draw(CondConfig cndCfg)
+    {
+        var _ = (int)cndCfg.Arg;
+        if (ImGui.Combo("##TargetType", ref _, "Target\0Focus Target\0Soft Target\0"))
+            cndCfg.Arg = _;
+    }
+    public dynamic GetDefaultArg(CondConfig cndCfg) => 0;
+}
+
+[MiscCondition]
 public class WeaponDrawnCondition : ICondition
 {
     public string ID => "wd";
