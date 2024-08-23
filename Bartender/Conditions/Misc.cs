@@ -90,6 +90,30 @@ public class PetCondition : ICondition
 }
 
 [MiscCondition]
+public class MinionCondition : ICondition
+{
+    public string ID => "mi";
+    public string ConditionName => "Minion Is Out";
+    public int DisplayPriority => 0;
+    public unsafe bool Check(dynamic arg)
+    {
+        return DalamudApi.ClientState.LocalPlayer.CurrentMinion != null && DalamudApi.ClientState.LocalPlayer.CurrentMount == null;
+    }
+}
+
+[MiscCondition]
+public class MountCondition : ICondition
+{
+    public string ID => "mo";
+    public string ConditionName => "Is On Mount";
+    public int DisplayPriority => 0;
+    public unsafe bool Check(dynamic arg)
+    {
+        return DalamudApi.ClientState.LocalPlayer.CurrentMount != null;
+    }
+}
+
+[MiscCondition]
 public class PluginCondition : ICondition, IDrawableCondition, IArgCondition
 {
     public string ID => "p";
