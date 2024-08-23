@@ -97,7 +97,8 @@ public class MinionCondition : ICondition
     public int DisplayPriority => 0;
     public unsafe bool Check(dynamic arg)
     {
-        return DalamudApi.ClientState.LocalPlayer.CurrentMinion != null && DalamudApi.ClientState.LocalPlayer.CurrentMount == null;
+        var minion = DalamudApi.ClientState.LocalPlayer.CurrentMinion;
+        return minion.Id != 0 && DalamudApi.ClientState.LocalPlayer.CurrentMount == null;
     }
 }
 
