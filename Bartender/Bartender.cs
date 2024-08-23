@@ -184,7 +184,10 @@ public unsafe class Bartender : IDalamudPlugin
             if (profile.ConditionSet == -1)
                 continue;
             else if (!profile.IsAlreadyAutomaticallySet && Configuration.ConditionSets[profile.ConditionSet].Checked)
+            {
                 BarLoad("/barload", profile.Name);
+                profile.IsAlreadyAutomaticallySet = true;
+            }
             else if (profile.IsAlreadyAutomaticallySet && !Configuration.ConditionSets[profile.ConditionSet].Checked)
                 profile.IsAlreadyAutomaticallySet = false;
         }

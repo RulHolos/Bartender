@@ -75,11 +75,16 @@ public static class ProfileUI
         {
             ProfileConfig profile = Bartender.Configuration.ProfileConfigs[i];
 
+            if (profile.ConditionSet != -1)
+                ImGui.PushStyleColor(ImGuiCol.Text, Bartender.Configuration.ConditionSets[profile.ConditionSet].Checked ? 0xFF00FF00u : 0xFF0000FFu);
+            else
+                ImGui.PushStyleColor(ImGuiCol.Text, 0xFFFFFFFFu);
             if (ImGui.Selectable($"#{i + 1}: {profile.Name}", SelectedProfile == profile))
             {
                 SelectedProfile = profile;
                 SelectedProfileId = i;
             }
+            ImGui.PopStyleColor();
             if (ImGui.BeginPopupContextItem())
             {
                 ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetColorU32(ImGui.GetIO().KeyShift ? ImGuiCol.Text : ImGuiCol.TextDisabled));
