@@ -18,7 +18,7 @@ public sealed class IconManager : IDisposable
         /*if (!iconCache.TryGetValue(id, out var ret))
             iconCache.Add(id, ret = DalamudApi.TextureProvider.GetIcon(id) ??
                 throw new ArgumentException($"Invalid icon id {id}", nameof(id)));*/
-        return DalamudApi.TextureProvider.GetFromGameIcon(id);
+        return DalamudApi.TextureProvider.GetFromGameIcon(new GameIconLookup(id % 1000000, id >= 1000000));
     }
 
     public void Dispose()
