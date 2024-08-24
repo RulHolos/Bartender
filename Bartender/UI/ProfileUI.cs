@@ -15,6 +15,10 @@ using Dalamud.Interface.ImGuiNotification;
 using static FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Utility;
+using Lumina.Text.ReadOnly;
+using System.Text;
+using System.Xml.Linq;
 
 namespace Bartender.UI;
 
@@ -325,6 +329,12 @@ public static class ProfileUI
                     slot->IconId = 0;
                 
                 string name = Utf8StringMarshaller.ConvertToManaged(slot->GetDisplayNameForSlot(slot->OriginalApparentSlotType, slot->OriginalApparentActionId))!;
+                if (name != null)
+                {
+                    var st = SeString.Parse(Encoding.UTF8.GetBytes(name)).ToString();
+                    name = st;
+                    DalamudApi.PluginLog.Debug(st);
+                }
                 string hint = slot->PopUpKeybindHintString;
 
                 string fullText = $"{name} {hint}";
