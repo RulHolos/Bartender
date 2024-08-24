@@ -8,6 +8,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using Bartender.UI.Utils;
 using Dalamud.Interface.Components;
 using System.Linq;
+using System.Runtime.InteropServices.Marshalling;
 using Bartender.DataCommands;
 using Dalamud.Interface;
 using Dalamud.Interface.ImGuiNotification;
@@ -322,8 +323,14 @@ public static class ProfileUI
                 RaptureHotbarModule.HotbarSlot* slot = Bartender.RaptureHotbar->GetSlotById(hotbars, i);
                 if (slot->CommandType == HotbarSlotType.Empty)
                     slot->IconId = 0;
-                string fullText = slot->PopUpHelp.ToString();
-                generatedSlots[hotbars, i] = new HotbarSlot(slot->CommandId, slot->CommandType, (int)slot->IconId, fullText);
+                
+                string name = Utf8StringMarshaller.ConvertToManaged(slot->GetDisplayNameForSlot(slot->OriginalApparentSlotType, slot->OriginalApparentActionId))!;
+                string hint = slot->PopUpKeybindHintString;
+
+                string fullText = $"{name} {hint}";
+                int icon = slot->GetIconIdForSlot(slot->OriginalApparentSlotType, slot->OriginalApparentActionId);
+                
+                generatedSlots[hotbars, i] = new HotbarSlot(slot->OriginalApparentActionId, slot->OriginalApparentSlotType, icon, fullText);
             }
         }
         return generatedSlots;
