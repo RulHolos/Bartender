@@ -86,12 +86,6 @@ public class BartenderUI : Window, IDisposable
             Bartender.Configuration.Save();
         if (ImGui.Checkbox(Localization.Get("conf.PopulateWhenCreatingProfile"), ref Bartender.Configuration.PopulateWhenCreatingProfile))
             Bartender.Configuration.Save();
-
-        /*
-        ImGui.SameLine();
-        if (ImGui.Checkbox("Use Penumbra", ref Bartender.Configuration.UsePenumbra))
-            Bartender.Configuration.Save();
-        */
     }
 
     private void DrawDebug()
