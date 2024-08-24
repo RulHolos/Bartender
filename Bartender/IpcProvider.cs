@@ -11,7 +11,7 @@ public static class IpcProvider
 {
     public const uint Breaking = 1;
     public const uint Features = 1;
-    public const uint Build = 1;
+    public const uint Build = 2;
 
     public const string Namespace = "Bartender";
 
