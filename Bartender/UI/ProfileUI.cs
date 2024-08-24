@@ -269,11 +269,11 @@ public static class ProfileUI
                 }
                 else if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
                 {
-                    ToggleSlotTransparent(hotbar, action);
+                    ToggleSlotTransparent(hotbar, j);
                 }
                 else if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && action.CommandType != HotbarSlotType.Empty)
                 {
-                    SetSlotAsEmpty(hotbar, action);
+                    SetSlotAsEmpty(hotbar, j);
                 }
                 if (ImGui.IsItemHovered() && action.CommandType != HotbarSlotType.Empty)
                 {
@@ -348,13 +348,13 @@ public static class ProfileUI
         Bartender.AddAndExecuteCommand(new ShiftIconCommand(SelectedProfile, slot, increment, profileId));
     }
 
-    private static void ToggleSlotTransparent(int profileId, HotbarSlot slot)
+    private static void ToggleSlotTransparent(int profileId, int slotIdx)
     {
-        Bartender.AddAndExecuteCommand(new ToggleSlotTransparencyCommand(SelectedProfile, slot, profileId));
+        Bartender.AddAndExecuteCommand(new ToggleSlotTransparencyCommand(SelectedProfile!, profileId, slotIdx));
     }
 
-    private static void SetSlotAsEmpty(int profileId, HotbarSlot slot)
+    private static void SetSlotAsEmpty(int profileId, int slotIdx)
     {
-        Bartender.AddAndExecuteCommand(new SetSlotAsEmptyCommand(SelectedProfile, slot, profileId));
+        Bartender.AddAndExecuteCommand(new SetSlotAsEmptyCommand(SelectedProfile!, profileId, slotIdx));
     }
 }
