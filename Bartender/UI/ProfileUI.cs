@@ -190,10 +190,12 @@ public static class ProfileUI
         ImGui.Separator();
         for (int s = 0; s < Bartender.NUM_OF_BARS; s++)
         {
+            ImGui.PushID(s);
             BarNums flag = (BarNums)(1 << s);
-            if ((SelectedProfile.UsedBars & flag) != flag)
-                continue;
-            DrawHotbar(s);
+            if ((SelectedProfile.UsedBars & flag) == flag) {
+                DrawHotbar(s);
+            }
+            ImGui.PopID();
         }
 
         ImGui.PopID();
@@ -248,10 +250,9 @@ public static class ProfileUI
             ImGui.SetTooltip(Localization.Get("tooltip.DragAndSlide"));
         for (int j = 0; j < Bartender.NUM_OF_SLOTS; j++)
         {
+            ImGui.PushID(j);
             try
             {
-                ImGui.PushID(j);
-
                 var action = SelectedProfile.Slots[hotbar, j];
                 var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(action.Icon));
                 Vector4 slotColor = action.Transparent ? new Vector4(0, 0, 0, 1f) : new Vector4(0);
@@ -293,13 +294,12 @@ public static class ProfileUI
                 }
                     
                 if (j < Bartender.NUM_OF_SLOTS - 1) ImGui.SameLine();
-
-                ImGui.PopID();
             }
             catch (Exception e)
             {
                 DalamudApi.PluginLog.Error($"{e}");
             }
+            ImGui.PopID();
         }
         ImGui.Spacing();
         ImGui.Separator();
