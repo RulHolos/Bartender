@@ -1,39 +1,26 @@
-using Bartender.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Bartender.DataCommands;
 
-public class ToggleSlotTransparencyCommand(ProfileConfig cfg, HotbarSlot barSlot, int proId) : DataCommand
+public class ToggleSlotTransparencyCommand(ProfileConfig cfg, int profileIndex, int slotIndex) : DataCommand
 {
-    private ProfileConfig config { get; set; } = cfg;
-    private HotbarSlot slot { get; set; } = barSlot;
-    private int profileID { get; set; } = proId;
-    private int slotID { get; set; }
+    private ProfileConfig Config { get; set; } = cfg;
+    private int ProfileIndex { get; set; } = profileIndex;
+    private int SlotIndex { get; set; } = slotIndex;
 
     public override void Execute()
     {
-        HotbarSlot[] hotbar = config.GetRow(profileID);
-        slotID = hotbar.ToList().IndexOf(slot);
+        HotbarSlot[] hotbar = Config.GetRow(ProfileIndex);
 
-        hotbar[slotID].Transparent = !hotbar[slotID].Transparent;
+        hotbar[SlotIndex].Transparent = !hotbar[SlotIndex].Transparent;
 
-        config.SetRow(hotbar, profileID);
+        Config.SetRow(hotbar, ProfileIndex);
         Bartender.Configuration.Save();
     }
 
     public override void Undo()
     {
-        HotbarSlot[] hotbar = config.GetRow(profileID);
-
-        hotbar[slotID].Transparent = !hotbar[slotID].Transparent;
-
-        config.SetRow(hotbar, profileID);
-        Bartender.Configuration.Save();
+        // Toggling is trivially undoable
+        Execute();
     }
 
-    public override string ToString() => $"Toggle slot transparency on [{config.Name}#bar {profileID + 1}]";
+    public override string ToString() => $"Toggle slot transparency on [{Config.Name}#bar {ProfileIndex + 1}]";
 }
