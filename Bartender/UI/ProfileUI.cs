@@ -333,7 +333,6 @@ public static class ProfileUI
                 {
                     var st = SeString.Parse(Encoding.UTF8.GetBytes(name)).ToString();
                     name = st;
-                    DalamudApi.PluginLog.Debug(st);
                 }
                 string hint = slot->PopUpKeybindHintString;
 

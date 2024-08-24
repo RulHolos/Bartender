@@ -27,12 +27,8 @@ public class ProfileConfig
     [JsonProperty("hotkey")][DefaultValue(0)] public int Hotkey = 0;
     [JsonProperty("hotbars")][DefaultValue(0)] public BarNums UsedBars = BarNums.None;
     [JsonProperty("slots")][DefaultValue(null)] public HotbarSlot[,] Slots = new HotbarSlot[Bartender.NUM_OF_BARS, Bartender.NUM_OF_SLOTS];
-    [JsonProperty("onHUDChange")][DefaultValue(false)] public bool OnHUDChange = false;
-    [JsonProperty("HUDLayout")][DefaultValue(0)] public int HUDLayout = 1;
-    [JsonProperty("format")][DefaultValue(0)] public int format = 0;
     [JsonProperty("condset")][DefaultValue(-1)] public int ConditionSet = -1;
     [JsonIgnore] public bool IsAlreadyAutomaticallySet = false;
-    [JsonIgnore] public BarFormat Format = BarFormat.Default;
 
     [Flags]
     public enum BarNums
@@ -48,14 +44,6 @@ public class ProfileConfig
         Eight = 1 << 7,
         Nine = 1 << 8,
         Ten = 1 << 9
-    }
-
-    public struct BarFormat
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-
-        public static BarFormat Default => new BarFormat() { X = Bartender.NUM_OF_SLOTS, Y = 1 };
     }
 
     public HotbarSlot[] GetRow(int rowIndex)
