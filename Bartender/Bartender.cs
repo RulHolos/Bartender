@@ -24,6 +24,7 @@ public unsafe class Bartender : IDalamudPlugin
     public static Game Game { get; private set; }
 
     public BartenderUI UI;
+    public ActionExplorerUI actionExplorerUI;
     private bool isPluginReady = false;
 
     public readonly WindowSystem WindowSystem = new("Bartender");
@@ -55,6 +56,9 @@ public unsafe class Bartender : IDalamudPlugin
         };
 
         WindowSystem.AddWindow(UI);
+
+        actionExplorerUI = new ActionExplorerUI();
+        WindowSystem.AddWindow(actionExplorerUI);
 
         DalamudApi.PluginInterface.UiBuilder.Draw += Draw;
         DalamudApi.PluginInterface.UiBuilder.OpenConfigUi += ToggleConfig;

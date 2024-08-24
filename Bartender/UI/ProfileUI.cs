@@ -265,6 +265,10 @@ public static class ProfileUI
                         ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEW);
                     });
                 }
+                else if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Left) && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
+                {
+                    AssignActionToSlot(hotbar, action);
+                }
                 else if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
                 {
                     ToggleSlotTransparent(hotbar, action);
@@ -310,6 +314,14 @@ public static class ProfileUI
                 new ChangeUsedBarsCommand(Bartender.Configuration.ProfileConfigs[(int)SelectedProfileId].UsedBars, (BarNums)flagsValue, (int)SelectedProfileId)
             );
         }
+    }
+
+    /// <summary>
+    /// Opens the action explorer with the hotbar and profile ID to assign an action to this slot.
+    /// </summary>
+    public static void AssignActionToSlot(int profileId, HotbarSlot slot)
+    {
+        Bartender.Plugin.actionExplorerUI.OpenWithSlotID(profileId, slot);
     }
 
     public static unsafe HotbarSlot[,] PopulateProfileHotbars()
