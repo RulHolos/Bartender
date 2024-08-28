@@ -107,6 +107,11 @@ public static class ConditionSetUI
                 ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetColorU32(ImGui.GetIO().KeyShift ? ImGuiCol.Text : ImGuiCol.TextDisabled));
                 if (ImGui.Selectable($"Delete Condition Set '{set.Name}' permanently") && ImGui.GetIO().KeyShift)
                 {
+                    if (Bartender.Configuration.ExportOnDelete)
+                    {
+                        ImGui.SetClipboardText(CondSetConfig.ToBase64(set));
+                        NotificationManager.Display(Localization.Get("notify.ConditionSetExported", set.Name));
+                    }
                     ConditionManager.RemoveConditionSet(i);
                     if (SelectedSet == set) SelectedSet = null;
                 }
