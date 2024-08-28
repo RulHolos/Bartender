@@ -183,7 +183,7 @@ public class Configuration : IPluginConfiguration
 
             DalamudApi.PluginInterface.SavePluginConfig(this);
         }
-        catch
+        catch (Exception ex)
         {
             if (!failed)
             {
@@ -192,7 +192,9 @@ public class Configuration : IPluginConfiguration
             }
             else
             {
-                DalamudApi.PluginLog.Error("Failed to save.");
+                NotificationManager.Display("Failed to save. Please see /xllog for details.",
+                    Dalamud.Interface.ImGuiNotification.NotificationType.Error);
+                DalamudApi.PluginLog.Error(ex.ToString());
             }
         }
     }
