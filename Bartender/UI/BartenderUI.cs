@@ -82,6 +82,14 @@ public class BartenderUI : Window, IDisposable
 
     private void DrawSettings()
     {
+        if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Bug, "Report Issue"))
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "https://github.com/AtaeKurri/Bartender/issues",
+                UseShellExecute = true
+            });
+        }
         if (ImGui.Checkbox(Localization.Get("conf.ExportOnDelete"), ref Bartender.Configuration.ExportOnDelete))
             Bartender.Configuration.Save();
         if (ImGui.Checkbox(Localization.Get("conf.PopulateWhenCreatingProfile"), ref Bartender.Configuration.PopulateWhenCreatingProfile))
