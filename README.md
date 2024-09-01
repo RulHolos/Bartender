@@ -15,7 +15,7 @@ Please create an [issue](https://github.com/AtaeKurri/Bartender/issues/new) if y
 
 ## Planned features
 
-* Currently none
+* Variables in `/barload` and `/barclear` commands.
 
 ## Usage
 
