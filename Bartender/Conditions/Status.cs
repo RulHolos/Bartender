@@ -17,9 +17,9 @@ public class StatusCondition : ICondition, IDrawableCondition, IArgCondition, IC
     public string GetSelectableTooltip(CondConfig cfg) => null;
     public void Draw(CondConfig cfg)
     {
-        static string formatName(Lumina.Excel.GeneratedSheets.Status t) => $"[{t.RowId}] {t.Name}";
+        static string formatName(Lumina.Excel.Sheets.Status t) => $"[{t.RowId}] {t.Name}";
 
-        if (!ImGuiEx.ExcelSheetCombo<Lumina.Excel.GeneratedSheets.Status>("##StatusEffect", out var status, s => formatName(s.GetRow((uint)cfg.Arg)),
+        if (!ImGuiEx.ExcelSheetCombo<Lumina.Excel.Sheets.Status>("##StatusEffect", out var status, s => formatName(s.GetRow((uint)cfg.Arg)),
             ImGuiComboFlags.None, (t, s) => formatName(t).Contains(s, StringComparison.CurrentCultureIgnoreCase),
             t => ImGui.Selectable(formatName(t), cfg.Arg == t.RowId))) return;
 

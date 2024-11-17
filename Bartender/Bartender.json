@@ -6,7 +6,7 @@
     "Punchline": "Need more hotbars? You damn bet we all do.",
     "Description": "Save and load hotbars with macros and/or chat commands. We all need more than 10 hotbars, well now we do have those.",
     "ApplicableVersion": "any",
-    "DalamudApiLevel": 10,
+    "DalamudApiLevel": 11,
     "Tags": [
         "qol",
         "hotbar",

@@ -9,7 +9,7 @@
         "TestingAssemblyVersion": "1.1.0",
         "RepoUrl": "https://github.com/AtaeKurri/Bartender",
         "ApplicableVersion": "any",
-        "DalamudApiLevel": 10,
+        "DalamudApiLevel": 11,
         "Tags": [
             "hotbar",
             "ui",

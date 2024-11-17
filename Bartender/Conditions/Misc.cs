@@ -1,4 +1,5 @@
 using Dalamud.Game.ClientState.Objects.Enums;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using ImGuiNET;
 using System;
@@ -98,7 +99,7 @@ public class MinionCondition : ICondition
     public unsafe bool Check(dynamic arg)
     {
         var minion = DalamudApi.ClientState.LocalPlayer.CurrentMinion;
-        return minion.Id != 0 && DalamudApi.ClientState.LocalPlayer.CurrentMount == null;
+        return ((Lumina.Excel.RowRef?)minion) != null && DalamudApi.ClientState.LocalPlayer.CurrentMount == null;
     }
 }
 
@@ -148,7 +149,7 @@ public class SanctuaryCondition : ICondition
     public string ID => "is";
     public string ConditionName => "In Sanctuary";
     public int DisplayPriority => 0;
-    public bool Check(dynamic arg) => FFXIVClientStructs.FFXIV.Client.Game.GameMain.IsInSanctuary();
+    public unsafe bool Check(dynamic arg) => TerritoryInfo.Instance()->InSanctuary;
     public string GetTooltip(CondConfig cfg) => null;
     public string GetSelectableTooltip(CondConfig cfg) => "This is where you can get experience boosts";
 }
@@ -191,7 +192,7 @@ public class IsInHomeWorldCondition : ICondition
     public string ID => "hw";
     public string ConditionName => "Is In Home World";
     public int DisplayPriority => 0;
-    public bool Check(dynamic arg) => DalamudApi.ClientState.LocalPlayer?.CurrentWorld.Id == DalamudApi.ClientState.LocalPlayer?.HomeWorld.Id;
+    public bool Check(dynamic arg) => DalamudApi.ClientState.LocalPlayer?.CurrentWorld.RowId == DalamudApi.ClientState.LocalPlayer?.HomeWorld.RowId;
     public string GetTooltip(CondConfig cfg) => null;
     public string GetSelectableTooltip(CondConfig cfg) => "Check if the current character is in their home world";
 }

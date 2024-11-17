@@ -15,9 +15,9 @@ public class ZoneCondition : ICondition, IDrawableCondition, IArgCondition, ICon
     public string GetSelectableTooltip(CondConfig cfg) => null;
     public void Draw(CondConfig cfg)
     {
-        static string formatName(Lumina.Excel.GeneratedSheets.TerritoryType t) => $"[{t.RowId}] {t.PlaceName.Value?.Name}";
+        static string formatName(Lumina.Excel.Sheets.TerritoryType t) => $"[{t.RowId}] {t.PlaceName.Value.Name}";
 
-        if (!ImGuiEx.ExcelSheetCombo<Lumina.Excel.GeneratedSheets.TerritoryType>("##Zone", out var territory, s => formatName(s.GetRow((uint)cfg.Arg)),
+        if (!ImGuiEx.ExcelSheetCombo<Lumina.Excel.Sheets.TerritoryType>("##Zone", out var territory, s => formatName(s.GetRow((uint)cfg.Arg)),
             ImGuiComboFlags.None, (t, s) => formatName(t).Contains(s, StringComparison.CurrentCultureIgnoreCase),
             t => ImGui.Selectable(formatName(t), cfg.Arg == t.RowId))) return;
 

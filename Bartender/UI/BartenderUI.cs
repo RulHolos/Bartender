@@ -11,6 +11,7 @@ using Dalamud.Interface.Components;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Bartender.UI.Utils;
 using Bartender.DataCommands;
+using Dalamud.Interface.Utility.Raii;
 
 namespace Bartender.UI;
 
