@@ -26,3 +26,15 @@ Please create an [issue](https://github.com/AtaeKurri/Bartender/issues/new) if y
 -> Check the hotbars you want to use/load.
 
 You can then load your profile using the `/barload <profile name>` command inside the chat, in the config or in a macro.
+
+## Variables
+
+You can use variables inside `/barload` and `/barclear`.
+To do so, put the name of the variable between `{}` (e.g: `{job}`)
+Example: `/barload {jobShort}-test` is the same as `/boarload RPR-test` (if you're currently a Reaper)
+The currently available variables are:
+- `job` - This is the name of the class/job in the game's lang. *Warning: in some languages, this name is all lowercase.* (e.g: reaper)
+- `jobshort` - This is the abbreviated name of the class/job (e.g: RPR)
+- `lvl` - The level of your current class/job
+
+Note: The case doesn't matter for the variable name. `job` will be parsed the same as `jOB`.

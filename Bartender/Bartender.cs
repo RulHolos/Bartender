@@ -10,6 +10,7 @@ using Dalamud.Interface.Windowing;
 using static Bartender.ProfileConfig;
 using System.Collections.Generic;
 using Bartender.DataCommands;
+using System.Text.RegularExpressions;
 
 namespace Bartender;
 
@@ -125,6 +126,8 @@ public unsafe class Bartender : IDalamudPlugin
         if (arguments.IsNullOrEmpty())
             DalamudApi.ChatGui.PrintError("Wrong arguments. Usage: /barload <profile name>");
 
+        TransformArguments(ref arguments);
+
         ProfileConfig? profile = Configuration!.ProfileConfigs.Find(profile => profile.Name == arguments);
         if (profile == null)
             DalamudApi.ChatGui.PrintError($"The profile '{arguments}' does not exist.");
@@ -137,6 +140,8 @@ public unsafe class Bartender : IDalamudPlugin
     {
         if (arguments.IsNullOrEmpty())
             DalamudApi.ChatGui.PrintError("Wrong arguments. Usage: /barclear <profile name>");
+
+        TransformArguments(ref arguments);
 
         ProfileConfig? profile = Configuration!.ProfileConfigs.Find(profile => profile.Name == arguments);
         if (profile == null)
@@ -165,6 +170,31 @@ public unsafe class Bartender : IDalamudPlugin
                 RaptureHotbar->WriteSavedSlot(RaptureHotbar->ActiveHotbarClassJobId, Convert.ToUInt32(i), slot, gameSlot, false, DalamudApi.ClientState.IsPvP);
             }
         }
+    }
+
+    private void TransformArguments(ref string args)
+    {
+        Regex reg = new(@"\{(\w+)\}", RegexOptions.IgnoreCase);
+
+        args = reg.Replace(args, match =>
+        {
+            string vari = match.Groups[1].Value;
+            string replacement = string.Empty;
+            switch (vari.ToLower())
+            {
+                case "job": // The name of the job is all lowercase in french.
+                    replacement = DalamudApi.ClientState.LocalPlayer.ClassJob.Value.Name.ToString();
+                    break;
+                case "jobshort":
+                    replacement = DalamudApi.ClientState.LocalPlayer.ClassJob.Value.Abbreviation.ToString();
+                    break;
+                case "lvl":
+                    replacement = DalamudApi.ClientState.LocalPlayer.Level.ToString();
+                    break;
+            }
+
+            return replacement;
+        });
     }
 
     #endregion
