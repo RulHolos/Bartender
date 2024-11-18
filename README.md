@@ -29,9 +29,9 @@ You can then load your profile using the `/barload <profile name>` command insid
 
 ## Variables
 
-You can use variables inside `/barload` and `/barclear`.
-To do so, put the name of the variable between `{}` (e.g: `{job}`)
-Example: `/barload {jobShort}-test` is the same as `/boarload RPR-test` (if you're currently a Reaper)
+You can use variables inside `/barload` and `/barclear`.<br>
+To do so, put the name of the variable between `{}` (e.g: `{job}`)<br>
+Example: `/barload {jobShort}-test` is the same as `/boarload RPR-test` (if you're currently a Reaper)<br>
 The currently available variables are:
 - `job` - This is the name of the class/job in the game's lang. *Warning: in some languages, this name is all lowercase.* (e.g: reaper)
 - `jobshort` - This is the abbreviated name of the class/job (e.g: RPR)

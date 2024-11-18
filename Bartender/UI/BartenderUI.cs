@@ -62,23 +62,23 @@ public class BartenderUI : Window, IDisposable
         }
 
         ImGuiEx.DoSlider();
-
-        ImGui.End();
     }
 
     private void DrawDisabledButtons(Stack<DataCommand> stack, FontAwesomeIcon icon)
     {
-        if (stack.Count <= 0)
-            ImGui.BeginDisabled();
+        ImGui.BeginDisabled(stack.Count <= 0);
+
         if (ImGuiComponents.IconButton(icon))
+        {
             if (icon == FontAwesomeIcon.Redo)
                 Bartender.Redo();
             else
                 Bartender.Undo();
-        if (ImGui.IsItemHovered())
-            ImGui.SetTooltip($"{Enum.GetName(icon)}: {((stack.Count != 0) ? stack.Peek() : "---")}");
-        if (stack.Count <= 0)
-            ImGui.EndDisabled();
+        }
+        if (stack.Count != 0)
+            ImGuiEx.SetItemTooltip($"{Enum.GetName(icon)}: {stack.Peek()}");
+        
+        ImGui.EndDisabled();
     }
 
     private void DrawSettings()
@@ -99,10 +99,6 @@ public class BartenderUI : Window, IDisposable
 
     private void DrawDebug()
     {
-        ImGui.TextUnformatted("Addon Config (HUD Layout #)");
-        ImGui.TextUnformatted($"{Game.CurrentHUDLayout}");
-        ImGui.NextColumn();
-
         if (ImGui.TreeNode("Command History"))
         {
             foreach (DataCommand command in Bartender.Plugin.CommandStack)

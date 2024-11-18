@@ -46,8 +46,7 @@ public static class ProfileUI
                         newProfile.Slots = PopulateProfileHotbars();
                     AddProfile(newProfile);
                 }
-                if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(Localization.Get("tooltip.CreateProfile"));
+                ImGuiEx.SetItemTooltip(Localization.Get("tooltip.CreateProfile"));
                 ImGui.SameLine();
             }
 
@@ -58,10 +57,7 @@ public static class ProfileUI
                 catch { import = string.Empty; }
                 ImportProfile(import);
             }
-            if (ImGui.IsItemHovered())
-            {
-                ImGui.SetTooltip(Localization.Get("tooltip.ImportProfile"));
-            }
+            ImGuiEx.SetItemTooltip(Localization.Get("tooltip.ImportProfile"));
         }
         ImGui.EndGroup();
 
