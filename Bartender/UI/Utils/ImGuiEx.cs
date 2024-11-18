@@ -81,7 +81,6 @@ public static class ImGuiEx
     }
 
     private static string search = string.Empty;
-    private static HashSet<ExcelRow> filtered;
     public static bool ExcelSheetCombo<T>(
         string id,
         out T selected,
@@ -102,8 +101,10 @@ public static class ImGuiEx
         Func<T, string, bool> searchPredicate,
         Func<T, bool> drawRow) where T : struct, IExcelRow<T>
     {
+        HashSet<T> filtered = [];
         selected = default;
-        if (!ImGui.BeginCombo(id, preview, flags)) return false;
+        if (!ImGui.BeginCombo(id, preview, flags))
+            return false;
 
         if (ImGui.IsWindowAppearing() && ImGui.IsWindowFocused() && !ImGui.IsAnyItemActive())
         {
@@ -115,7 +116,9 @@ public static class ImGuiEx
         if (ImGui.InputText("##ExcelSheetComboSearch", ref search, 128))
             filtered = null;
 
-        filtered = sheet.Where(s => searchPredicate(s, search)).Cast<ExcelRow>().ToHashSet();
+        DalamudApi.PluginLog.Debug(sheet.Count.ToString());
+        filtered = sheet.Where(s => searchPredicate(s, search)).ToHashSet();
+        DalamudApi.PluginLog.Debug(filtered.Count.ToString());
 
         var i = 0;
         foreach (var row in filtered.Cast<T>())
@@ -125,7 +128,10 @@ public static class ImGuiEx
                 selected = row;
             ImGui.PopID();
 
+            if (selected.Equals(default(T)))
+                continue;
             ImGui.EndCombo();
+
             return true;
         }
 

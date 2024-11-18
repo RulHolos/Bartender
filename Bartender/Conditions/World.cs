@@ -21,8 +21,13 @@ public class WorldCondition : ICondition, IDrawableCondition, IArgCondition, IOn
     {
         static string formatName(Lumina.Excel.Sheets.World w) => $"[{w.RowId}] {w.Name}";
 
-        if (!ImGuiEx.ExcelSheetCombo<Lumina.Excel.Sheets.World>("##Zone", out var world, s => formatName(s.GetRow((uint)cfg.Arg)),
-            ImGuiComboFlags.None, (w, s) => formatName(w).Contains(s, StringComparison.CurrentCultureIgnoreCase),
+        if (!ImGuiEx.ExcelSheetCombo<Lumina.Excel.Sheets.World>("##Zone",
+            out var world,
+            s => formatName(s.GetRow((uint)cfg.Arg)),
+            ImGuiComboFlags.None, (w, s) =>
+            {
+                return formatName(w).Contains(s, StringComparison.CurrentCultureIgnoreCase) || s == string.Empty;
+            },
             t => ImGui.Selectable(formatName(t), cfg.Arg == t.RowId))) return;
 
         cfg.Arg = world.RowId;
