@@ -30,7 +30,7 @@ public class WorldCondition : ICondition, IDrawableCondition, IArgCondition, IOn
             },
             t => ImGui.Selectable(formatName(t), cfg.Arg == t.RowId))) return;
 
-        cfg.Arg = world.RowId;
+        cfg.Arg = world.Value.RowId;
         Bartender.Configuration.Save();
     }
     public dynamic GetDefaultArg(CondConfig cfg) => DalamudApi.ClientState.LocalPlayer?.HomeWorld.RowId;

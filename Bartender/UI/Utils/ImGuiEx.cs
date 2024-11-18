@@ -4,6 +4,7 @@ using ImGuiNET;
 using Lumina.Excel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -81,9 +82,10 @@ public static class ImGuiEx
     }
 
     private static string search = string.Empty;
+    private static HashSet<uint> filtered;
     public static bool ExcelSheetCombo<T>(
         string id,
-        out T selected,
+        [NotNullWhen(true)] out T? selected,
         Func<ExcelSheet<T>, string> getPreview,
         ImGuiComboFlags flags,
         Func<T, string, bool> searchPredicate,
@@ -94,14 +96,13 @@ public static class ImGuiEx
     }
 
     public static bool ExcelSheetCombo<T>(string id,
-        out T selected,
+        [NotNullWhen(true)] out T? selected,
         string preview,
         ImGuiComboFlags flags,
         ExcelSheet<T> sheet,
         Func<T, string, bool> searchPredicate,
         Func<T, bool> drawRow) where T : struct, IExcelRow<T>
     {
-        HashSet<T> filtered = [];
         selected = default;
         if (!ImGui.BeginCombo(id, preview, flags))
             return false;
@@ -116,22 +117,22 @@ public static class ImGuiEx
         if (ImGui.InputText("##ExcelSheetComboSearch", ref search, 128))
             filtered = null;
 
-        DalamudApi.PluginLog.Debug(sheet.Count.ToString());
-        filtered = sheet.Where(s => searchPredicate(s, search)).ToHashSet();
-        DalamudApi.PluginLog.Debug(filtered.Count.ToString());
+        filtered ??= sheet.Where(s => searchPredicate(s, search)).Select(s => s.RowId).ToHashSet();
 
         var i = 0;
-        foreach (var row in filtered.Cast<T>())
+        foreach (var rowID in filtered)
         {
+            if (sheet.GetRowOrDefault(rowID) is not { } row)
+                continue;
+
             ImGui.PushID(i++);
             if (drawRow(row))
                 selected = row;
             ImGui.PopID();
 
-            if (selected.Equals(default(T)))
+            if (selected == null)
                 continue;
             ImGui.EndCombo();
-
             return true;
         }
 

@@ -23,7 +23,7 @@ public class StatusCondition : ICondition, IDrawableCondition, IArgCondition, IC
             ImGuiComboFlags.None, (t, s) => formatName(t).Contains(s, StringComparison.CurrentCultureIgnoreCase),
             t => ImGui.Selectable(formatName(t), cfg.Arg == t.RowId))) return;
 
-        cfg.Arg = status.RowId;
+        cfg.Arg = status.Value.RowId;
         Bartender.Configuration.Save();
     }
     public dynamic GetDefaultArg(CondConfig cfg)

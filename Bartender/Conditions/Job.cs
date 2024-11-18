@@ -14,10 +14,9 @@ public class JobCondition : ICondition, IDrawableCondition, IArgCondition, ICond
     public void Draw(CondConfig cfg)
     {
         var jobs = DalamudApi.DataManager.GetExcelSheet<Lumina.Excel.Sheets.ClassJob>();
-        if (jobs == null) return;
+        var r = jobs.GetRowOrDefault((uint)cfg.Arg);
 
-        var r = jobs.GetRow((uint)cfg.Arg);
-        if (!ImGui.BeginCombo("##Job", r.Abbreviation.ToString())) return;
+        if (!ImGui.BeginCombo("##Job", r?.Abbreviation.ToString())) return;
 
         foreach (var job in jobs)
         {
