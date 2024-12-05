@@ -9,26 +9,28 @@ using static Dalamud.Interface.Utility.Raii.ImRaii;
 
 namespace Bartender.DataCommands;
 
-public class SaveProfileCommand(int id, HotbarSlot[,] nSlots) : DataCommand
+public class SaveProfileCommand : DataCommand
 {
-    private int profileID { get; set; } = id;
-
+    private int profileID;
     private HotbarSlot[,] previousSlots;
-    private HotbarSlot[,] newSlots { get; set; } = nSlots;
+    private readonly HotbarSlot[,] newSlots;
 
-    // BUG ; TODO: Doesn't revert properly.
-
-    public unsafe override void Execute()
+    public SaveProfileCommand(int id, HotbarSlot[,] nSlots)
     {
-        previousSlots = Bartender.Configuration.ProfileConfigs[profileID].Slots;
-        Bartender.Configuration.ProfileConfigs[profileID].Slots = newSlots;
+        profileID = id;
+        newSlots = (HotbarSlot[,])nSlots.Clone();
+    }
+
+    public override void Execute()
+    {
+        previousSlots = (HotbarSlot[,])Bartender.Configuration.ProfileConfigs[profileID].Slots.Clone();
+        Bartender.Configuration.ProfileConfigs[profileID].Slots = (HotbarSlot[,])newSlots.Clone();
         Bartender.Configuration.Save();
     }
 
     public override void Undo()
     {
-        Bartender.Configuration.ProfileConfigs[profileID].Slots = previousSlots;
-        newSlots = Bartender.Configuration.ProfileConfigs[profileID].Slots;
+        Bartender.Configuration.ProfileConfigs[profileID].Slots = (HotbarSlot[,])previousSlots.Clone();
         Bartender.Configuration.Save();
     }
 
