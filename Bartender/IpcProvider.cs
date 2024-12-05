@@ -11,7 +11,7 @@ public static class IpcProvider
 {
     public const uint Breaking = 1;
     public const uint Features = 1;
-    public const uint Build = 2;
+    public const uint Build = 5;
 
     public const string Namespace = "Bartender";
 
@@ -22,6 +22,7 @@ public static class IpcProvider
     public static ICallGateProvider<string[]>? GetConditionSets;
     public static ICallGateProvider<int, bool>? CheckConditionSet;
     public static ICallGateProvider<Dictionary<string, string>>? GetCurrentLangDict;
+    public static ICallGateProvider<string, object?> LoadProfile;
 
     internal static void Init()
     {
@@ -42,6 +43,9 @@ public static class IpcProvider
 
         GetCurrentLangDict = DalamudApi.PluginInterface.GetIpcProvider<Dictionary<string, string>>($"{Namespace}.GetCurrentLangDict");
         GetCurrentLangDict.RegisterFunc(() => Localization.LangDict);
+
+        LoadProfile = DalamudApi.PluginInterface.GetIpcProvider<string, object?>($"{Namespace}.LoadProfile");
+        LoadProfile.RegisterAction((name) => Bartender.Plugin.BarLoad("/barload", name));
     }
 
     internal static void DeInit()
