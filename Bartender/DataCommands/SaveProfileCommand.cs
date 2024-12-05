@@ -16,6 +16,8 @@ public class SaveProfileCommand(int id, HotbarSlot[,] nSlots) : DataCommand
     private HotbarSlot[,] previousSlots;
     private HotbarSlot[,] newSlots { get; set; } = nSlots;
 
+    // BUG ; TODO: Doesn't revert properly.
+
     public unsafe override void Execute()
     {
         previousSlots = Bartender.Configuration.ProfileConfigs[profileID].Slots;

@@ -11,6 +11,8 @@ using static Bartender.ProfileConfig;
 using System.Collections.Generic;
 using Bartender.DataCommands;
 using System.Text.RegularExpressions;
+using Dalamud.Interface.ImGuiNotification;
+using System.Linq;
 
 namespace Bartender;
 
@@ -118,6 +120,24 @@ public unsafe class Bartender : IDalamudPlugin
     [Command("/bartender")]
     [HelpMessage("Open the configuration menu.")]
     public void ToggleConfig(string command, string arguments) => ToggleConfig();
+
+    [Command("/barsave")]
+    [HelpMessage("Saves the current hotbars into an existing profile. Usage: /barsave <profile name>")]
+    public void BarSave(string command, string arguments)
+    {
+        if (arguments.IsNullOrEmpty())
+            DalamudApi.ChatGui.PrintError("Wrong arguments. Usage: /barsave <profile name>");
+
+        TransformArguments(ref arguments);
+
+        ProfileConfig prof = Configuration.ProfileConfigs.Find(x => x.Name == arguments);
+        if (prof == null)
+            return;
+
+        if (!AddAndExecuteCommand(new SaveProfileCommand(Configuration.ProfileConfigs.IndexOf(prof), ProfileUI.PopulateProfileHotbars())))
+            return;
+        NotificationManager.Display(Localization.Get("notify.ProfileSaved", prof.Name), NotificationType.Success, 3);
+    }
 
     [Command("/barload")]
     [HelpMessage("Load a bar profile (meant for macros). Usage: /barload <profile name>")]

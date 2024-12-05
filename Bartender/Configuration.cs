@@ -24,6 +24,7 @@ public struct HotbarSlot(uint id, HotbarSlotType type, int icon, string name, bo
 public class ProfileConfig
 {
     [JsonProperty("name")][DefaultValue("")] public string Name = string.Empty;
+    [JsonProperty("iconId")][DefaultValue(0)] public int IconId = 0;
     [JsonProperty("hotkey")][DefaultValue(0)] public int Hotkey = 0;
     [JsonProperty("hotbars")][DefaultValue(0)] public BarNums UsedBars = BarNums.None;
     [JsonProperty("slots")][DefaultValue(null)] public HotbarSlot[,] Slots = new HotbarSlot[Bartender.NUM_OF_BARS, Bartender.NUM_OF_SLOTS];
