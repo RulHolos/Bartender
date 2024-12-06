@@ -22,7 +22,7 @@ public static class IpcProvider
     public static ICallGateProvider<string[]>? GetConditionSets;
     public static ICallGateProvider<int, bool>? CheckConditionSet;
     public static ICallGateProvider<Dictionary<string, string>>? GetCurrentLangDict;
-    public static ICallGateProvider<string, object?> LoadProfile;
+    public static ICallGateProvider<string, object?>? LoadProfile;
 
     internal static void Init()
     {

@@ -1,0 +1,50 @@
+{
+    "tab.Profiles": "Profile",
+    "tab.Automation": "Automatisierung",
+    "tab.Settings": "Einstellungen",
+    "tab.Debug": "Debug",
+
+    "btn.SaveHotbars": "Aktuelle Menüs speichern",
+    "btn.LoadProfile": "Profil laden",
+    "btn.UndoLastSave": "Letzte Speicherung rückgängig machen",
+    "btn.ClearHotbars": "Profil Menüs zurücksetzen",
+
+    "text.Hotbar": "Menü #{0}",
+    "text.NoCondition": "Keine Bedingungen...",
+    "text.None": "---",
+    "text.HotbarsToLoad": "Zu ladende Menüs mit '/barload'",
+    "text.Export": "Exportieren",
+
+    "selectable.DeleteProfile": "Profil '{0}' permanent löschen",
+
+    "tooltip.CreateProfile": "Neues Profil erstellen",
+    "tooltip.ImportProfile": "Profil von Zwischenablage importieren",
+    "tooltip.DeleteProfile": "SHIFT halten um zu löschen",
+    "tooltip.DragAndSlide": "Du kannst die Symbole per Drag-and-Drop verschieben, um sie in diesem Menü neu anzuordnen.",
+    "tooltip.SwapToAbove": "Mit dem Objekt darüber tauschen",
+    "tooltip.SwapToAboveCondition": "Bedingungsblock mit dem darüber tauschen.\nDies ändert auch die ausgewählten Bedingungen im Profil, welches beide verwendet.",
+    "tooltip.SwapToBelow": "Mit dem Objekt darunter tauschen",
+    "tooltip.SwapToBelowCondition": "Bedingungsblock mit dem darunter tauschen.\nDies ändert auch die ausgewählten Bedingungen im Profil, welches beide verwendet.",
+    "tooltip.ConditionSetTutorial": "Zu prüfender Bedingungsblock. Lädt das Profil, wenn die Bedingungen erfüllt sind.\nLass dieses Feld leer, wenn du dieses Profil nicht automatisch laden möchtest.\nAchtung: Die Reihenfolge der Profile ist wichtig: Profile mit einer höheren ID stehen weiter oben in der Prioritätenliste.",
+    "tooltip.HoldToShift": "Linksklick und ziehen: Slots verschieben",
+    "tooltip.TransparentSlot": "Transparenter Slot",
+    "tooltip.NonTransparentSlot": "Nicht transparenter Slot",
+    "tooltip.EmptySlot": "Rechtsklick: Leerer Slot",
+    "tooltip.ToggleTransparency": "Shift + Rechtsklick: Transparenz umschalten",
+
+    "notify.ProfileSaved": "Profil gespeichert: {0}",
+    "notify.CannotImport": "Profil kann nicht importiert werden",
+    "notify.ProfileImported": "Profil importiert: {0}",
+    "notify.ProfileExported": "Profil exportiert und in die Zwischenablage kopiert: {0}",
+    "notify.ConditionSetExported": "Bedingungen exportiert und in die Zwischenablage kopiert: {0}",
+
+    "conf.ExportOnDelete": "Exportieren beim Löschen",
+    "conf.PopulateWhenCreatingProfile": "Neu erstellte Profile mit aktuellen Menüs füllen",
+
+    "cond.Delete": "Rechtsklick, um diese Bedingung zu löschen",
+    "cond.True": "Wahr",
+    "cond.False": "Falsch",
+    "cond.Set": "Block (Bis zu dieser Bedingungs): {0}",
+    "cond.Is": "IST",
+    "cond.IsNot": "IST NICHT"
+}

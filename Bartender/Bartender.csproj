@@ -18,6 +18,7 @@ Allows for automation too!</Description>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="locals\de.json" />
     <None Remove="locals\en.json" />
     <None Remove="locals\fr.json" />
   </ItemGroup>
@@ -26,6 +27,9 @@ Allows for automation too!</Description>
     <Content Include="images\icon.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <Visible>true</Visible>
+    </Content>
+    <Content Include="locals\de.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="locals\en.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
