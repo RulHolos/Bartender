@@ -58,6 +58,7 @@ public unsafe class Bartender : IDalamudPlugin
         };
 
         WindowSystem.AddWindow(UI);
+        DalamudApi.PluginInterface.UiBuilder.OpenMainUi += ToggleConfig;
 
         DalamudApi.PluginInterface.UiBuilder.Draw += Draw;
         DalamudApi.PluginInterface.UiBuilder.OpenConfigUi += ToggleConfig;

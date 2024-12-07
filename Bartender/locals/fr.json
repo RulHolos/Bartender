@@ -31,6 +31,7 @@
     "tooltip.NonTransparentSlot": "Case Non Transparente",
     "tooltip.EmptySlot": "Clic-droit : vider la case",
     "tooltip.ToggleTransparency": "Shift + Clic-droit : basculer la transparence",
+    "tooltip.ProfileIcon": "Icone du profil",
 
     "notify.ProfileSaved": "Profil sauvegardé : {0}",
     "notify.CannotImport": "Impossible d'importer le profil",

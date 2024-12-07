@@ -19,6 +19,8 @@ using Dalamud.Utility;
 using Lumina.Text.ReadOnly;
 using System.Text;
 using System.Xml.Linq;
+using Lumina.Excel.Sheets;
+using Dalamud.Interface.Textures.Internal;
 
 namespace Bartender.UI;
 
@@ -76,10 +78,24 @@ public static class ProfileUI
         {
             ProfileConfig profile = Bartender.Configuration.ProfileConfigs[i];
 
+            float totalWidth = ImGui.GetContentRegionAvail().X;
+
+            ImGui.Columns(2, $"BartenderProList-{profile.Name}", false);
+
+            float buttonWidth = ImGui.CalcTextSize("↑").X + ImGui.GetStyle().ItemSpacing.X;
+            buttonWidth += ImGui.CalcTextSize("↓").X + ImGui.GetStyle().ItemSpacing.X;
+            buttonWidth += ImGui.GetStyle().ItemSpacing.X * 1.5f;
+
+            float firstColumnWidth = totalWidth - buttonWidth;
+            if (firstColumnWidth < 0) firstColumnWidth = 0;
+            ImGui.SetColumnWidth(0, firstColumnWidth);
+            ImGui.SetColumnWidth(1, buttonWidth);
+
             if (profile.ConditionSet != -1)
                 ImGui.PushStyleColor(ImGuiCol.Text, Bartender.Configuration.ConditionSets[profile.ConditionSet].Checked ? 0xFF00FF00u : 0xFF0000FFu);
             else
                 ImGui.PushStyleColor(ImGuiCol.Text, 0xFFFFFFFFu);
+
             if (ImGui.Selectable($"#{i + 1}: {profile.Name}", SelectedProfile == profile))
             {
                 SelectedProfile = profile;
@@ -88,6 +104,14 @@ public static class ProfileUI
             ImGui.PopStyleColor();
             if (ImGui.BeginPopupContextItem())
             {
+                if (ImGui.MenuItem(Localization.Get("text.Export")))
+                {
+                    ImGui.SetClipboardText(ProfileConfig.ToBase64(profile));
+                    NotificationManager.Display(Localization.Get("notify.ProfileExported", profile.Name));
+                }
+
+                ImGui.Separator();
+
                 ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetColorU32(ImGui.GetIO().KeyShift ? ImGuiCol.Text : ImGuiCol.TextDisabled));
                 if (ImGui.Selectable(Localization.Get("selectable.DeleteProfile", profile.Name)) && ImGui.GetIO().KeyShift)
                 {
@@ -100,6 +124,20 @@ public static class ProfileUI
                     ImGui.SetTooltip(Localization.Get("tooltip.DeleteProfile"));
                 ImGui.EndPopup();
             }
+
+            ImGui.NextColumn();
+
+            if (ImGui.Button($"↑##BartenderProList-{profile.Name}"))
+                ShiftProfile(i, false);
+            if (ImGui.IsItemHovered())
+                ImGui.SetTooltip(Localization.Get("tooltip.SwapToAbove"));
+            ImGui.SameLine(0f, 1.5f);
+            if (ImGui.Button($"↓##BartenderProList-{profile.Name}"))
+                ShiftProfile(i, true);
+            if (ImGui.IsItemHovered())
+                ImGui.SetTooltip(Localization.Get("tooltip.SwapToBelow"));
+
+            ImGui.Columns(1);
         }
     }
 
@@ -108,31 +146,51 @@ public static class ProfileUI
         ImGui.Columns(2, $"BartenderList-{SelectedProfileId}", false);
         ImGui.PushID((int)SelectedProfileId);
 
+        try
+        {
+            var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(SelectedProfile.IconId));
+            ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(64, 64));
+        }
+        catch (IconNotFoundException)
+        {
+            var icon = Bartender.IconManager.GetIcon(0);
+            ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(64, 64));
+        }
+        ImGuiEx.SetItemTooltip(Localization.Get("tooltip.ProfileIcon"));
+
+        ImGui.SameLine();
+
+        ImGui.BeginGroup();
+        {
+            if (ImGui.InputInt("##ProfileIconId", ref SelectedProfile.IconId, 1))
+            {
+                SelectedProfile.IconId = Math.Max(0, SelectedProfile.IconId);
+                Bartender.Configuration.Save();
+            }
+
+            if (ImGuiComponents.IconButton(FontAwesomeIcon.Save))
+                SaveProfile();
+            ImGuiEx.SetItemTooltip(Localization.Get("btn.SaveHotbars"));
+            ImGui.SameLine();
+            if (ImGuiComponents.IconButton(FontAwesomeIcon.Download))
+                Bartender.Plugin.BarLoad("/barload", SelectedProfile.Name);
+            ImGuiEx.SetItemTooltip(Localization.Get("btn.LoadProfile"));
+            ImGui.SameLine();
+            if (ImGuiComponents.IconButton(FontAwesomeIcon.SquareXmark))
+                Bartender.Plugin.BarClear("/barclear", SelectedProfile.Name);
+            ImGuiEx.SetItemTooltip(Localization.Get("btn.ClearHotbars"));
+        }
+        ImGui.EndGroup();
+
+        ImGui.NextColumn();
+
         ImGui.SetNextItemWidth(-1);
         if (ImGui.InputText("##Name", ref SelectedProfile.Name, 32))
             Bartender.Configuration.Save();
 
-        ImGui.NextColumn();
-
-        if (ImGui.Button("↑"))
-            ShiftProfile((int)SelectedProfileId, false);
-        if (ImGui.IsItemHovered())
-            ImGui.SetTooltip(Localization.Get("tooltip.SwapToAbove"));
-        ImGui.SameLine();
-        if (ImGui.Button("↓"))
-            ShiftProfile((int)SelectedProfileId, true);
-        if (ImGui.IsItemHovered())
-            ImGui.SetTooltip(Localization.Get("tooltip.SwapToBelow"));
-        ImGui.SameLine();
-        if (ImGui.Button(Localization.Get("text.Export")))
-        {
-            ImGui.SetClipboardText(ProfileConfig.ToBase64(SelectedProfile));
-            NotificationManager.Display(Localization.Get("notify.ProfileExported", SelectedProfile.Name));
-        }
         var preview = ((SelectedProfile.ConditionSet >= 0) && (SelectedProfile.ConditionSet < Bartender.Configuration.ConditionSets.Count))
             ? $"[{SelectedProfile.ConditionSet + 1}] {Bartender.Configuration.ConditionSets[SelectedProfile.ConditionSet].Name}" : Localization.Get("text.NoCondition");
-        ImGui.SameLine();
-        ImGui.SetNextItemWidth(150);
+        ImGui.SetNextItemWidth(-1);
         if (ImGui.BeginCombo("##Condition", preview))
         {
             if (ImGui.Selectable(Localization.Get("text.None"), SelectedProfile.ConditionSet == -1))
@@ -148,14 +206,10 @@ public static class ProfileUI
             }
             ImGui.EndCombo();
         }
-        if (ImGui.IsItemHovered())
-            ImGui.SetTooltip(Localization.Get("tooltip.ConditionSetTutorial"));
+        ImGuiEx.SetItemTooltip(Localization.Get("tooltip.ConditionSetTutorial"));
 
-        ImGui.Separator();
-        ImGui.NextColumn();
         ImGui.Columns(1);
-
-        ImGui.Text(Localization.Get("text.HotbarsToLoad"));
+        ImGui.Separator();
 
         int num = 1;
         foreach (BarNums bar in Enum.GetValues(typeof(BarNums)))
@@ -172,23 +226,10 @@ public static class ProfileUI
         ImGui.SameLine();
         ImGui.Text($"=> {((int)Bartender.Configuration.ProfileConfigs[(int)SelectedProfileId].UsedBars)}");
 #endif
-        ImGui.Spacing();
-
-        if (ImGui.Button(Localization.Get("btn.SaveHotbars")))
-            SaveProfile();
-        ImGui.SameLine();
-        if (ImGui.Button(Localization.Get("btn.LoadProfile")))
-            Bartender.Plugin.BarLoad("/barload", SelectedProfile.Name);
-        if (ImGui.IsItemHovered())
-            ImGui.SetTooltip($"Execute '/barload {SelectedProfile.Name}'");
-
-        if (ImGui.Button(Localization.Get("btn.ClearHotbars")))
-            Bartender.Plugin.BarClear("/barclear", SelectedProfile.Name);
-        if (ImGui.IsItemHovered())
-            ImGui.SetTooltip($"Execute '/barclear {SelectedProfile.Name}'");
 
         ImGui.Spacing();
         ImGui.Separator();
+        ImGui.BeginChild($"BartenderList-{SelectedProfileId}-Hotbars");
         for (int s = 0; s < Bartender.NUM_OF_BARS; s++)
         {
             ImGui.PushID(s);
@@ -198,6 +239,7 @@ public static class ProfileUI
             }
             ImGui.PopID();
         }
+        ImGui.EndChild();
 
         ImGui.PopID();
     }
@@ -311,6 +353,7 @@ public static class ProfileUI
                 new ChangeUsedBarsCommand(Bartender.Configuration.ProfileConfigs[(int)SelectedProfileId].UsedBars, (BarNums)flagsValue, (int)SelectedProfileId)
             );
         }
+        ImGuiEx.SetItemTooltip(Localization.Get("text.HotbarsToLoad"));
     }
 
     public static unsafe HotbarSlot[,] PopulateProfileHotbars()

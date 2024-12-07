@@ -31,6 +31,7 @@
     "tooltip.NonTransparentSlot": "Nicht transparenter Slot",
     "tooltip.EmptySlot": "Rechtsklick: Leerer Slot",
     "tooltip.ToggleTransparency": "Shift + Rechtsklick: Transparenz umschalten",
+    "tooltip.ProfileIcon": "Profilsymbol",
 
     "notify.ProfileSaved": "Profil gespeichert: {0}",
     "notify.CannotImport": "Profil kann nicht importiert werden",
