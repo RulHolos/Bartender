@@ -27,6 +27,7 @@ public unsafe class Bartender : IDalamudPlugin
     public static Game Game { get; private set; }
 
     public BartenderUI UI;
+    public ProfileHotbar ProfileHotbar;
     private bool isPluginReady = false;
 
     public readonly WindowSystem WindowSystem = new("Bartender");
@@ -56,11 +57,16 @@ public unsafe class Bartender : IDalamudPlugin
             IsOpen = true,
 #endif
         };
+        ProfileHotbar = new ProfileHotbar()
+        {
+            IsOpen = Configuration.UseProfileHotbar,
+        };
 
         WindowSystem.AddWindow(UI);
-        DalamudApi.PluginInterface.UiBuilder.OpenMainUi += ToggleConfig;
+        WindowSystem.AddWindow(ProfileHotbar);
 
         DalamudApi.PluginInterface.UiBuilder.Draw += Draw;
+        DalamudApi.PluginInterface.UiBuilder.OpenMainUi += ToggleConfig;
         DalamudApi.PluginInterface.UiBuilder.OpenConfigUi += ToggleConfig;
 
         ReadyPlugin();
@@ -115,12 +121,17 @@ public unsafe class Bartender : IDalamudPlugin
     #endregion
 
     public void ToggleConfig() => UI.Toggle();
+    public void ToggleProfileHotbar() => ProfileHotbar.Toggle();
 
     #region Commands
 
     [Command("/bartender")]
     [HelpMessage("Open the configuration menu.")]
     public void ToggleConfig(string command, string arguments) => ToggleConfig();
+
+    [Command("/barhotbar")]
+    [HelpMessage("Open the Profiles Hotbar window.")]
+    public void ToggleProfileHotbar(string command, string arguments) => ToggleProfileHotbar();
 
     [Command("/barsave")]
     [HelpMessage("Saves the current hotbars into an existing profile. Usage: /barsave <profile name>")]
@@ -154,6 +165,7 @@ public unsafe class Bartender : IDalamudPlugin
             DalamudApi.ChatGui.PrintError($"The profile '{arguments}' does not exist.");
         BarControl(profile!, false);
     }
+    public void BarLoad(string arguments) => BarLoad("/barload", arguments);
 
     [Command("/barclear")]
     [HelpMessage("Clears a bar profile (meant for macros). Usage: /barclear <profile name>")]

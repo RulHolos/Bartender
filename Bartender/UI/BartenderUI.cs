@@ -95,6 +95,14 @@ public class BartenderUI : Window, IDisposable
             Bartender.Configuration.Save();
         if (ImGui.Checkbox(Localization.Get("conf.PopulateWhenCreatingProfile"), ref Bartender.Configuration.PopulateWhenCreatingProfile))
             Bartender.Configuration.Save();
+        ImGui.SetNextItemWidth(160f);
+        if (ImGui.InputFloat("Profile icon display size", ref Bartender.Configuration.IconDisplaySize, 1, 5))
+            Bartender.Configuration.Save();
+        if (ImGui.Checkbox("Use Profiles Hotbar", ref Bartender.Configuration.UseProfileHotbar))
+        {
+            Bartender.Plugin.ProfileHotbar.IsOpen = Bartender.Configuration.UseProfileHotbar;
+            Bartender.Configuration.Save();
+        } 
     }
 
     private void DrawDebug()

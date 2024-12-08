@@ -9,6 +9,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using System.Text;
 using System.IO.Compression;
 using static FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule;
+using System.Numerics;
 
 namespace Bartender;
 
@@ -158,6 +159,15 @@ public class Configuration : IPluginConfiguration
     public bool ExportOnDelete = false;
     public bool PopulateWhenCreatingProfile = false;
     public bool UsePenumbra = true;
+    public float IconDisplaySize = 64.0f;
+    public float IconDisplaySizeHotbar = 40.0f;
+
+    public bool UseProfileHotbar = false;
+    public bool ProfileHotbarLocked = false;
+    public int ProfileHotbarMaxCount = 12;
+    public int ProfileHotbarMaxColumns = 6;
+    public List<int> ProfileHotbarSlotsIndexes = [];
+    public bool ProfileHotbarBackground = true;
 
     public void Initialize()
     {

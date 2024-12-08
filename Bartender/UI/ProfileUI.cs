@@ -21,6 +21,7 @@ using System.Text;
 using System.Xml.Linq;
 using Lumina.Excel.Sheets;
 using Dalamud.Interface.Textures.Internal;
+using Dalamud.Interface.Utility.Raii;
 
 namespace Bartender.UI;
 
@@ -82,9 +83,9 @@ public static class ProfileUI
 
             ImGui.Columns(2, $"BartenderProList-{profile.Name}", false);
 
-            float buttonWidth = ImGui.CalcTextSize("↑").X + ImGui.GetStyle().ItemSpacing.X;
-            buttonWidth += ImGui.CalcTextSize("↓").X + ImGui.GetStyle().ItemSpacing.X;
-            buttonWidth += ImGui.GetStyle().ItemSpacing.X * 1.5f;
+            float buttonWidth = ImGui.CalcTextSize("↑").X + (ImGui.GetStyle().ItemSpacing.X * 2);
+            buttonWidth += ImGui.CalcTextSize("↓").X + (ImGui.GetStyle().ItemSpacing.X * 2);
+            buttonWidth += ImGui.GetStyle().ItemSpacing.X * 2.0f;
 
             float firstColumnWidth = totalWidth - buttonWidth;
             if (firstColumnWidth < 0) firstColumnWidth = 0;
@@ -146,15 +147,16 @@ public static class ProfileUI
         ImGui.Columns(2, $"BartenderList-{SelectedProfileId}", false);
         ImGui.PushID((int)SelectedProfileId);
 
+        float displaySize = Bartender.Configuration.IconDisplaySize;
         try
         {
             var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(SelectedProfile.IconId));
-            ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(64, 64));
+            ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(displaySize), default, new Vector2(1f, 1f), 0);
         }
         catch (IconNotFoundException)
         {
             var icon = Bartender.IconManager.GetIcon(0);
-            ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(64, 64));
+            ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(displaySize), default, new Vector2(1f, 1f), 0);
         }
         ImGuiEx.SetItemTooltip(Localization.Get("tooltip.ProfileIcon"));
 
@@ -167,6 +169,7 @@ public static class ProfileUI
                 SelectedProfile.IconId = Math.Max(0, SelectedProfile.IconId);
                 Bartender.Configuration.Save();
             }
+            ImGuiEx.SetItemTooltip("See \"/xldata icons\" for icon ids.");
 
             if (ImGuiComponents.IconButton(FontAwesomeIcon.Save))
                 SaveProfile();
@@ -221,11 +224,12 @@ public static class ProfileUI
             CheckboxFlags($"#{num}", bar);
             num++;
         }
-
+        /*
 #if DEBUG
         ImGui.SameLine();
         ImGui.Text($"=> {((int)Bartender.Configuration.ProfileConfigs[(int)SelectedProfileId].UsedBars)}");
 #endif
+        */
 
         ImGui.Spacing();
         ImGui.Separator();
@@ -299,7 +303,7 @@ public static class ProfileUI
                 var action = SelectedProfile.Slots[hotbar, j];
                 var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(action.Icon));
                 Vector4 slotColor = action.Transparent ? new Vector4(0, 0, 0, 1f) : new Vector4(0);
-                ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new Vector2(35, 35), default, new Vector2(1f, 1f), 0, slotColor);
+                ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new Vector2(40), default, new Vector2(1f, 1f), 0, slotColor);
                 if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
                 {
                     ImGuiEx.SetupSlider(false, ImGui.GetItemRectSize().X + ImGui.GetStyle().ItemSpacing.X, (hitInterval, increment, closing) =>
