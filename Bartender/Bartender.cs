@@ -162,7 +162,10 @@ public unsafe class Bartender : IDalamudPlugin
 
         ProfileConfig? profile = Configuration!.ProfileConfigs.Find(profile => profile.Name == arguments);
         if (profile == null)
+        {
             DalamudApi.ChatGui.PrintError($"The profile '{arguments}' does not exist.");
+            return;
+        }
         BarControl(profile!, false);
     }
     public void BarLoad(string arguments) => BarLoad("/barload", arguments);
@@ -178,7 +181,10 @@ public unsafe class Bartender : IDalamudPlugin
 
         ProfileConfig? profile = Configuration!.ProfileConfigs.Find(profile => profile.Name == arguments);
         if (profile == null)
+        {
             DalamudApi.ChatGui.PrintError($"The profile '{arguments}' does not exist.");
+            return;
+        }
         BarControl(profile!, true);
     }
 

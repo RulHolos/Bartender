@@ -3,7 +3,6 @@ using System.Numerics;
 using System.Collections.Generic;
 using ImGuiNET;
 using Dalamud.Interface.Utility;
-using static Bartender.ProfileConfig;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using Bartender.UI.Utils;
 using Dalamud.Interface.Components;
@@ -22,6 +21,7 @@ using System.Xml.Linq;
 using Lumina.Excel.Sheets;
 using Dalamud.Interface.Textures.Internal;
 using Dalamud.Interface.Utility.Raii;
+using static Bartender.ProfileConfig;
 
 namespace Bartender.UI;
 
@@ -73,13 +73,17 @@ public static class ProfileUI
         }
     }
 
+    public static int SwitchingProfile = -1;
+
     public static void DrawProfileList()
     {
         for (int i = 0; i < Bartender.Configuration.ProfileConfigs.Count; i++)
         {
+            ImGui.PushID($"Bartender-ProfileLista-{i}");
+
             ProfileConfig profile = Bartender.Configuration.ProfileConfigs[i];
 
-            float totalWidth = ImGui.GetContentRegionAvail().X;
+            /*float totalWidth = ImGui.GetContentRegionAvail().X;
 
             ImGui.Columns(2, $"BartenderProList-{profile.Name}", false);
 
@@ -90,7 +94,7 @@ public static class ProfileUI
             float firstColumnWidth = totalWidth - buttonWidth;
             if (firstColumnWidth < 0) firstColumnWidth = 0;
             ImGui.SetColumnWidth(0, firstColumnWidth);
-            ImGui.SetColumnWidth(1, buttonWidth);
+            ImGui.SetColumnWidth(1, buttonWidth);*/
 
             if (profile.ConditionSet != -1)
                 ImGui.PushStyleColor(ImGuiCol.Text, Bartender.Configuration.ConditionSets[profile.ConditionSet].Checked ? 0xFF00FF00u : 0xFF0000FFu);
@@ -103,6 +107,20 @@ public static class ProfileUI
                 SelectedProfileId = i;
             }
             ImGui.PopStyleColor();
+
+            if (ImGui.IsItemActive() && ImGui.IsMouseDown(ImGuiMouseButton.Left))
+                ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeNS);
+            if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
+            {
+                SwitchingProfile = i;
+                ImGuiEx.SetupSlider(true, ImGui.GetItemRectSize().Y + ImGui.GetStyle().ItemSpacing.Y, (hitInterval, increment, closing) =>
+                {
+                    if (hitInterval)
+                        ShiftProfile(SwitchingProfile, increment);
+                    ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeNS);
+                });
+            }
+            
             if (ImGui.BeginPopupContextItem())
             {
                 if (ImGui.MenuItem(Localization.Get("text.Export")))
@@ -126,7 +144,7 @@ public static class ProfileUI
                 ImGui.EndPopup();
             }
 
-            ImGui.NextColumn();
+            /*ImGui.NextColumn();
 
             if (ImGui.Button($"↑##BartenderProList-{profile.Name}"))
                 ShiftProfile(i, false);
@@ -138,7 +156,9 @@ public static class ProfileUI
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip(Localization.Get("tooltip.SwapToBelow"));
 
-            ImGui.Columns(1);
+            ImGui.Columns(1);*/
+            
+            ImGui.PopID();
         }
     }
 
@@ -304,6 +324,8 @@ public static class ProfileUI
                 var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(action.Icon));
                 Vector4 slotColor = action.Transparent ? new Vector4(0, 0, 0, 1f) : new Vector4(0);
                 ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new Vector2(40), default, new Vector2(1f, 1f), 0, slotColor);
+                if (ImGui.IsItemActive() && ImGui.IsMouseDown(ImGuiMouseButton.Left))
+                    ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEW);
                 if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
                 {
                     ImGuiEx.SetupSlider(false, ImGui.GetItemRectSize().X + ImGui.GetStyle().ItemSpacing.X, (hitInterval, increment, closing) =>

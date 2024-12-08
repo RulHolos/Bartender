@@ -15,13 +15,13 @@ using Dalamud.Interface.Utility.Raii;
 using System.Linq;
 using Dalamud.Interface.Textures.Internal;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Interface.Textures;
 
 namespace Bartender.UI;
 
 public class ProfileHotbar : Window, IDisposable
 {
     private bool DrawConfig = false;
-    private bool IsHidden = false;
 
     internal static bool InBattle => DalamudApi.Condition[ConditionFlag.InCombat];
     private static bool GposeActive => DalamudApi.Condition[ConditionFlag.WatchingCutscene];
@@ -115,11 +115,21 @@ public class ProfileHotbar : Window, IDisposable
             {
                 try
                 {
-                    ProfileConfig profile = Bartender.Configuration.ProfileConfigs[Bartender.Configuration.ProfileHotbarSlotsIndexes[i]];
-                    var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(profile.IconId));
-                    if (ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(displaySize)))
-                        Bartender.Plugin.BarLoad(profile.Name);
-                    ImGuiEx.SetItemTooltip(profile.Name);
+                    if (Bartender.Configuration.ProfileConfigs.Count <= Bartender.Configuration.ProfileHotbarSlotsIndexes[i])
+                    {
+                        var icon = Bartender.IconManager.GetIcon(0);
+                        if (ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(displaySize)))
+                            Bartender.Plugin.BarLoad("Invalid Profile");
+                        ImGuiEx.SetItemTooltip("Invalid Profile");
+                    }
+                    else
+                    {
+                        ProfileConfig profile = Bartender.Configuration.ProfileConfigs[Bartender.Configuration.ProfileHotbarSlotsIndexes[i]];
+                        var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(profile.IconId));
+                        if (ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(displaySize)))
+                            Bartender.Plugin.BarLoad(profile.Name);
+                        ImGuiEx.SetItemTooltip(profile.Name);
+                    }
                 }
                 catch (IconNotFoundException)
                 {
