@@ -112,11 +112,10 @@ public static class ProfileUI
                 ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeNS);
             if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
             {
-                SwitchingProfile = i;
                 ImGuiEx.SetupSlider(true, ImGui.GetItemRectSize().Y + ImGui.GetStyle().ItemSpacing.Y, (hitInterval, increment, closing) =>
                 {
                     if (hitInterval)
-                        ShiftProfile(SwitchingProfile, increment);
+                        ShiftProfile(Bartender.Configuration.ProfileConfigs.IndexOf(profile), increment);
                     ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeNS);
                 });
             }

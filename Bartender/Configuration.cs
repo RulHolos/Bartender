@@ -164,7 +164,7 @@ public class Configuration : IPluginConfiguration
 
     public bool UseProfileHotbar = false;
     public bool ProfileHotbarLocked = false;
-    public int ProfileHotbarMaxCount = 12;
+    public int ProfileHotbarMaxCount = Bartender.NUM_OF_SLOTS;
     public int ProfileHotbarMaxColumns = 6;
     public List<int> ProfileHotbarSlotsIndexes = [];
     public bool ProfileHotbarBackground = true;
