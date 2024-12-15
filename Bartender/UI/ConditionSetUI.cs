@@ -334,11 +334,15 @@ public static class ConditionSetUI
                     try { drawable?.Draw(condCfg); }
                     catch (Exception e) { DalamudApi.PluginLog.Error($"Error while drawing {drawable}.\n{e}"); }
                 }
-                ImGui.NextColumn();
+
+                ImGui.Columns(1);
 
                 ImGui.PopID();
             }
+            ImGui.EndGroup();
         }
+
+        ImGui.PopStyleVar();
     }
 
     public static void ShiftConditionSet(int i, bool increment)

@@ -12,10 +12,11 @@ public static class IpcProvider
     public const uint Breaking = 1;
     public const uint Features = 1;
     public const uint Build = 5;
+    public const uint Revision = 0;
 
     public const string Namespace = "Bartender";
 
-    public static ICallGateProvider<(uint, uint, uint)>? ApiVersion;
+    public static ICallGateProvider<(uint, uint, uint, uint)>? ApiVersion;
     public static ICallGateProvider<object> Initialized;
     public static ICallGateProvider<object> Disposed;
     public static ICallGateProvider<string[]>? GetProfiles;
@@ -26,8 +27,8 @@ public static class IpcProvider
 
     internal static void Init()
     {
-        ApiVersion = DalamudApi.PluginInterface.GetIpcProvider<(uint, uint, uint)>($"{Namespace}.{nameof(ApiVersion)}");
-        ApiVersion.RegisterFunc(() => (Breaking, Features, Build));
+        ApiVersion = DalamudApi.PluginInterface.GetIpcProvider<(uint, uint, uint, uint)>($"{Namespace}.{nameof(ApiVersion)}");
+        ApiVersion.RegisterFunc(() => (Breaking, Features, Build, Revision));
 
         Initialized = DalamudApi.PluginInterface.GetIpcProvider<object>($"{Namespace}.Initialized");
         Disposed = DalamudApi.PluginInterface.GetIpcProvider<object>($"{Namespace}.Disposed");
@@ -45,13 +46,13 @@ public static class IpcProvider
         GetCurrentLangDict.RegisterFunc(() => Localization.LangDict);
 
         LoadProfile = DalamudApi.PluginInterface.GetIpcProvider<string, object?>($"{Namespace}.LoadProfile");
-        LoadProfile.RegisterAction((name) => Bartender.Plugin.BarLoad("/barload", name));
+        LoadProfile.RegisterAction(Bartender.Plugin.BarLoad);
     }
 
     internal static void DeInit()
     {
         ApiVersion?.UnregisterFunc();
-        GetProfiles.UnregisterFunc();
+        GetProfiles?.UnregisterFunc();
         GetConditionSets?.UnregisterFunc();
         CheckConditionSet?.UnregisterFunc();
         GetCurrentLangDict?.UnregisterFunc();

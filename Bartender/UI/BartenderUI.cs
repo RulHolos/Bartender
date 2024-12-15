@@ -108,7 +108,13 @@ public class BartenderUI : Window, IDisposable
             Bartender.Plugin.ProfileHotbar.IsOpen = Bartender.Configuration.UseProfileHotbar;
             Bartender.Configuration.Save();
         }
-        if (ImGui.InputInt("Time for backups", ref Bartender.Configuration.BackupTimer))
+        ImGui.SetNextItemWidth(160f);
+        if (ImGui.InputInt("Minutes between auto backups", ref Bartender.Configuration.BackupTimer))
+        {
+            Bartender.Configuration.Save();
+        }
+        ImGui.SetNextItemWidth(160f);
+        if (ImGui.InputInt("Maximum kept backups count", ref Bartender.Configuration.BackupCountLimit))
         {
             Bartender.Configuration.Save();
         }

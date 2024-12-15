@@ -301,7 +301,7 @@ public class Configuration : IPluginConfiguration
             string oldestBackup = backupDirectories.First();
             File.Delete(oldestBackup);
             backupDirectories.RemoveAt(0);
-            DalamudApi.PluginLog.Debug("Deleting config.");
+            DalamudApi.PluginLog.Debug($"Deleting backup \"{oldestBackup}\".");
         }
     }
 
