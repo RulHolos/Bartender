@@ -1,6 +1,7 @@
 {
     "tab.Profiles": "Profils",
     "tab.Automation": "Automatisation",
+    "tab.Backups": "Backups",
     "tab.Settings": "Paramètres",
     "tab.Debug": "Debug",
 
@@ -32,6 +33,8 @@
     "tooltip.EmptySlot": "Clic-droit : vider la case",
     "tooltip.ToggleTransparency": "Shift + Clic-droit : basculer la transparence",
     "tooltip.ProfileIcon": "Icone du profil",
+    "tooltip.ProfileHelp": "Vous pouvez garder le clic gauche enfoncé et glisser en bas ou en haut pour réorganiser vos profils.",
+    "tooltip.LoadBackup": "Appuyer sur ce bouton va charger la dernière backup et peut modifier vos paramètres et barres. Ce n'est pas réversible.\nGarder SHIFT enfoncé pour charger.",
 
     "notify.ProfileSaved": "Profil sauvegardé : {0}",
     "notify.CannotImport": "Impossible d'importer le profil",

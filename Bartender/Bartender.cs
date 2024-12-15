@@ -93,6 +93,14 @@ public unsafe class Bartender : IDalamudPlugin
         }
     }
 
+    public void Reload()
+    {
+        Configuration = (Configuration)DalamudApi.PluginInterface.GetPluginConfig() ?? new();
+        Configuration.Initialize();
+        Configuration.UpdateVersion();
+        Configuration.Save();
+    }
+
     #region Commands
 
     public static void Undo()
@@ -244,6 +252,8 @@ public unsafe class Bartender : IDalamudPlugin
     private void Update(IFramework framework)
     {
         if (!isPluginReady) return;
+
+        Configuration.DoAutomaticBackup();
 
         ConditionManager.UpdateCache();
         for (int i = 0; i < Configuration.ConditionSets.Count; i++)

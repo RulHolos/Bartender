@@ -1,6 +1,7 @@
 {
     "tab.Profiles": "Profile",
     "tab.Automation": "Automatisierung",
+    "tab.Backups": "Backups",
     "tab.Settings": "Einstellungen",
     "tab.Debug": "Debug",
 
@@ -32,6 +33,8 @@
     "tooltip.EmptySlot": "Rechtsklick: Leerer Slot",
     "tooltip.ToggleTransparency": "Shift + Rechtsklick: Transparenz umschalten",
     "tooltip.ProfileIcon": "Profilsymbol",
+    "tooltip.ProfileHelp": "Sie können die linke Maustaste gedrückt halten und nach unten oder oben ziehen, um Ihre Profile neu anzuordnen.",
+    "tooltip.LoadBackup": "Wenn Sie auf diese Schaltfläche klicken, wird die Konfiguration mit dem ausgewählten Backup überschrieben. Dies ist NICHT umkehrbar.\nHalten Sie die UMSCHALTTASTE gedrückt und klicken Sie, um zu laden.",
 
     "notify.ProfileSaved": "Profil gespeichert: {0}",
     "notify.CannotImport": "Profil kann nicht importiert werden",

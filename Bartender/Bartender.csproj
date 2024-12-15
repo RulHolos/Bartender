@@ -10,7 +10,7 @@ Allows for automation too!</Description>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
     <AssemblyVersion>1.1.5</AssemblyVersion>
-    <FileVersion>1.1.5</FileVersion>
+    <FileVersion>1.1.5.0</FileVersion>
     <AssemblyName>Bartender</AssemblyName>
     <RootNamespace>Bartender</RootNamespace>
     <SignAssembly>False</SignAssembly>

@@ -61,6 +61,8 @@ public static class ProfileUI
                 ImportProfile(import);
             }
             ImGuiEx.SetItemTooltip(Localization.Get("tooltip.ImportProfile"));
+
+            ImGuiComponents.HelpMarker(Localization.Get("tooltip.ProfileHelp"));
         }
         ImGui.EndGroup();
 
@@ -122,6 +124,15 @@ public static class ProfileUI
             
             if (ImGui.BeginPopupContextItem())
             {
+                if (ImGui.MenuItem(Localization.Get("btn.SaveHotbars")))
+                    SaveProfile(profile, i);
+                if (ImGui.MenuItem(Localization.Get("btn.LoadProfile")))
+                    Bartender.Plugin.BarLoad("/barload", profile.Name);
+                if (ImGui.MenuItem(Localization.Get("btn.ClearHotbars")))
+                    Bartender.Plugin.BarClear("/barclear", profile.Name);
+
+                ImGui.Separator();
+
                 if (ImGui.MenuItem(Localization.Get("text.Export")))
                 {
                     ImGui.SetClipboardText(ProfileConfig.ToBase64(profile));
@@ -409,12 +420,14 @@ public static class ProfileUI
         return generatedSlots;
     }
 
-    public static unsafe void SaveProfile()
+    public static unsafe void SaveProfile(ProfileConfig profile, int profileID)
     {
-        if (!Bartender.AddAndExecuteCommand(new SaveProfileCommand((int)SelectedProfileId, PopulateProfileHotbars())))
+        if (!Bartender.AddAndExecuteCommand(new SaveProfileCommand(profileID, PopulateProfileHotbars())))
             return;
-        NotificationManager.Display(Localization.Get("notify.ProfileSaved", SelectedProfile.Name), NotificationType.Success, 3);
+        NotificationManager.Display(Localization.Get("notify.ProfileSaved", profile.Name), NotificationType.Success, 3);
     }
+
+    public static unsafe void SaveProfile() => SaveProfile(SelectedProfile, (int)SelectedProfileId);
 
     private static void ShiftIcon(int profileId, HotbarSlot slot, bool increment)
     {

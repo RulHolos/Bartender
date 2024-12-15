@@ -45,6 +45,11 @@ public class BartenderUI : Window, IDisposable
                 ConditionSetUI.Draw(iconButtonSize);
                 ImGui.EndTabItem();
             }
+            if (ImGui.BeginTabItem(Localization.Get("tab.Backups")))
+            {
+                BackupsUI.Draw(iconButtonSize);
+                ImGui.EndTabItem();
+            }
             if (ImGui.BeginTabItem(Localization.Get("tab.Settings")))
             {
                 DrawSettings();
@@ -102,7 +107,11 @@ public class BartenderUI : Window, IDisposable
         {
             Bartender.Plugin.ProfileHotbar.IsOpen = Bartender.Configuration.UseProfileHotbar;
             Bartender.Configuration.Save();
-        } 
+        }
+        if (ImGui.InputInt("Time for backups", ref Bartender.Configuration.BackupTimer))
+        {
+            Bartender.Configuration.Save();
+        }
     }
 
     private void DrawDebug()

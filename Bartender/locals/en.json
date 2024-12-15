@@ -1,6 +1,7 @@
 {
     "tab.Profiles": "Profiles",
     "tab.Automation": "Automation",
+    "tab.Backups": "Backups",
     "tab.Settings": "Settings",
     "tab.Debug": "Debug",
 
@@ -32,6 +33,8 @@
     "tooltip.EmptySlot": "Right-click: empty slot",
     "tooltip.ToggleTransparency": "Shift + Right-click: toggle transparency",
     "tooltip.ProfileIcon": "Profile icon",
+    "tooltip.ProfileHelp": "You can hold right click and drag up and down on the profile list to re-order your profiles.",
+    "tooltip.LoadBackup": "Clicking this button will override the configuration with the selected backup. This is NOT reversible.\nHold SHIFT and click to load.",
 
     "notify.ProfileSaved": "Profile saved: {0}",
     "notify.CannotImport": "Cannot import profile",

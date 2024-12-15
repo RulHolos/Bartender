@@ -10,6 +10,7 @@ using System.Text;
 using System.IO.Compression;
 using static FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule;
 using System.Numerics;
+using System.Linq;
 
 namespace Bartender;
 
@@ -141,7 +142,7 @@ public class Configuration : IPluginConfiguration
     public void UpdateVersion()
     {
         Version? version = Assembly.GetExecutingAssembly().GetName().Version;
-        PluginVersion = $"{version.Major}.{version.Minor}.{version.Build}";
+        PluginVersion = $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
         Save();
     }
     public bool CheckVersion() => PluginVersion == Assembly.GetExecutingAssembly().GetName().Version?.ToString();
@@ -169,8 +170,20 @@ public class Configuration : IPluginConfiguration
     public List<int> ProfileHotbarSlotsIndexes = [];
     public bool ProfileHotbarBackground = true;
 
+    public int BackupTimer = 30;
+    public int BackupCountLimit = 10;
+    [JsonIgnore] public DirectoryInfo BackupFolder;
+    [JsonIgnore] public DirectoryInfo ManualBackupFolder;
+    [JsonIgnore] public float lastSave = -1;
+
     public void Initialize()
     {
+        if (ConfigFolder.Exists)
+        {
+            ManualBackupFolder = new DirectoryInfo(Path.Combine(ConfigFolder.FullName, "Backups"));
+            BackupFolder = new DirectoryInfo(Path.Combine(ConfigFolder.FullName, "AutoBackups"));
+        }
+
         ProfileConfigs.Clear();
         foreach (string profile in EncodedProfiles)
             ProfileConfigs.Add(ProfileConfig.FromBase64(profile));
@@ -193,6 +206,7 @@ public class Configuration : IPluginConfiguration
                 EncodedConditionSets.Add(CondSetConfig.ToBase64(cond));
 
             DalamudApi.PluginInterface.SavePluginConfig(this);
+            lastSave = Bartender.RunTime;
         }
         catch (Exception ex)
         {
@@ -209,4 +223,87 @@ public class Configuration : IPluginConfiguration
             }
         }
     }
+
+    #region Backups
+
+    public string GetPluginBackupPath()
+    {
+        try
+        {
+            if (!BackupFolder.Exists)
+                BackupFolder.Create();
+            return BackupFolder.FullName;
+        }
+        catch
+        {
+            NotificationManager.Display("Failed to create backup folder.", Dalamud.Interface.ImGuiNotification.NotificationType.Error);
+            return string.Empty;
+        }
+    }
+
+    public void DoAutomaticBackup()
+    {
+        if (BackupTimer <= 0 || lastSave < 0 || Bartender.RunTime < lastSave + (BackupTimer * 60))
+            return;
+
+        GetPluginBackupPath();
+        SaveBackup();
+        DalamudApi.PluginLog.Info("Automatic Backup.");
+    }
+
+    private void SaveBackup()
+    {
+        try
+        {
+            string timestamp = DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss");
+            string destination = Path.Combine(BackupFolder.FullName, $"{GetVersion()}_{timestamp}.json");
+
+            MaintainBackupLimit(BackupCountLimit);
+
+            ConfigFile.CopyTo(destination, true);
+            Save();
+        }
+        catch (Exception ex)
+        {
+            DalamudApi.PluginLog.Error($"Failed to save automatic backup.\n{ex}");
+        }
+    }
+
+    public void LoadBackup(FileInfo file)
+    {
+        if (!file.Exists)
+            return;
+
+        try
+        {
+            file.CopyTo(ConfigFile.FullName, true);
+            Bartender.Plugin.Reload();
+        }
+        catch (Exception ex)
+        {
+            DalamudApi.PluginLog.Error($"Failed to load backup.", ex);
+        }
+    }
+
+    private void MaintainBackupLimit(int maxBackups = 10)
+    {
+        // Get all backup directories sorted by creation time (oldest to newest)
+        string backupPath = BackupFolder.FullName;
+        if (!Directory.Exists(backupPath))
+        {
+            DalamudApi.PluginLog.Debug("Dir doesn't exist", backupPath);
+            return;
+        }
+        List<string> backupDirectories = [.. Directory.GetFiles(backupPath).OrderBy(Directory.GetCreationTime)];
+
+        while (backupDirectories.Count >= maxBackups)
+        {
+            string oldestBackup = backupDirectories.First();
+            File.Delete(oldestBackup);
+            backupDirectories.RemoveAt(0);
+            DalamudApi.PluginLog.Debug("Deleting config.");
+        }
+    }
+
+    #endregion
 }
