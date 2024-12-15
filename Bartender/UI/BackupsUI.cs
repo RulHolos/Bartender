@@ -2,6 +2,7 @@ using Dalamud.Interface.Components;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,7 @@ public static class BackupsUI
             ImGui.EndDisabled();
             ImGuiComponents.HelpMarker(Localization.Get("tooltip.LoadBackup"));
 
+            ImGui.Text($"Selected: {(SelectedFile != string.Empty ? GetReadableDate(SelectedFile) : "...")}");
             if (ImGui.BeginListBox("##Automatic Backups"))
             {
                 foreach (string file in Directory.EnumerateFiles(Bartender.Configuration.BackupFolder.FullName))
@@ -43,7 +45,15 @@ public static class BackupsUI
                 }
                 ImGui.EndListBox();
             }
-            
+
+            if (ImGui.Button("Open Backup Folder"))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = Bartender.Configuration.BackupFolder.FullName,
+                    UseShellExecute = true
+                });
+            }
         }
         ImGui.EndGroup();
     }

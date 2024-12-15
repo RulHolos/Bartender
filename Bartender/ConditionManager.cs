@@ -1,3 +1,4 @@
+using Bartender.DataCommands;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -275,13 +276,6 @@ public static class ConditionManager
 
     public static void ShiftCondition(CondSetConfig set, CondConfig cond, bool incr)
     {
-        var i = set.Conditions.IndexOf(cond);
-        if (!incr ? i <= 0 : i >= (set.Conditions.Count - 1)) return;
-
-        var j = (incr ? i + 1 : i - 1);
-        var condition = set.Conditions[i];
-        set.Conditions.RemoveAt(i);
-        set.Conditions.Insert(j, condition);
-        Bartender.Configuration.Save();
+        Bartender.AddAndExecuteCommand(new ShiftConditionCommand(set, cond, incr));
     }
 }
