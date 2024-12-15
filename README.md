@@ -1,4 +1,6 @@
-# <img src="Bartender/images/icon.png" alt="bartender" width="32"> Bartender
+<p align="center" width="50%">
+    <img width="20%" src="Bartender/images/icon.png">
+</p><h1 align="center">Bartender (v1.1.5.0)</h1>
 
 Bartender is a FFXIV plugin which allows you to save and load your hotbars, mimicking vanilla's `/hotbar copy` command.
 
@@ -13,9 +15,11 @@ Please create an [issue](https://github.com/AtaeKurri/Bartender/issues/new) if y
 * `/barclear <profile name>` clears the bars used by the profile of any icons.
 * Automation of profile loading with conditions.
 
+Word to gamepad players: Bartender doesn't support cross hotbars.
+
 ## Planned features
 
-* Variables in `/barload` and `/barclear` commands.
+* Currently none
 
 ## Usage
 
@@ -38,3 +42,8 @@ The currently available variables are:
 - `lvl` - The level of your current class/job
 
 Note: The case doesn't matter for the variable name. `job` will be parsed the same as `jOB`.
+
+## Profiles Hotbar
+
+Bartender allows you to display a permanent configurable hotbar-like interface on your HUD displaying your profiles.<br>
+This allows you to not waste actual hotbar spaces for your macros if you don't wish to use them.
