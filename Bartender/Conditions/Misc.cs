@@ -15,6 +15,33 @@ public class MiscConditionAttribute : Attribute, IConditionCategory
     public int DisplayPriority => 100;
 }
 
+/*
+[AttributeUsage(AttributeTargets.Class)]
+public class InvalidConditionAttribute : Attribute, IConditionCategory
+{
+    public string CategoryName => "None";
+    public int DisplayPriority => 100;
+}
+
+[InvalidCondition]
+public class NoneCondition : ICondition
+{
+    public string ID => "nul";
+    public string ConditionName => "None";
+    public int DisplayPriority => 0;
+    public bool Check(dynamic arg) => false;
+}
+
+[InvalidCondition]
+public class InvalidCondition : ICondition
+{
+    public string ID => "invalid";
+    public string ConditionName => "Invalid Condition";
+    public int DisplayPriority => 0;
+    public bool Check(dynamic arg) => false;
+}
+*/
+
 [MiscCondition]
 public class LoggedInCondition : ICondition
 {
@@ -184,6 +211,48 @@ public class PartyCondition : ICondition, IDrawableCondition, IArgCondition
         }
     }
     public dynamic GetDefaultArg(CondConfig cfg) => 1;
+}
+
+[MiscCondition]
+public class LevelHigherThanCondition : ICondition, IDrawableCondition, IArgCondition
+{
+    public string ID => "lvllw";
+    public string ConditionName => "Cur. Level higher than";
+    public int DisplayPriority => 0;
+    public bool Check(dynamic arg) => DalamudApi.ClientState.LocalPlayer?.Level >= arg;
+    public string GetTooltip(CondConfig cfg) => null;
+    public string GetSelectableTooltip(CondConfig cfg) => null;
+    public void Draw(CondConfig cfg)
+    {
+        var _ = (int)cfg.Arg;
+        if (ImGui.SliderInt("##LevelHigherThan", ref _, 0, 100))
+        {
+            cfg.Arg = _;
+            Bartender.Configuration.Save();
+        }
+    }
+    public dynamic GetDefaultArg(CondConfig cfg) => 0;
+}
+
+[MiscCondition]
+public class LevelLowerThanCondition : ICondition, IDrawableCondition, IArgCondition
+{
+    public string ID => "lvlhi";
+    public string ConditionName => "Cur. Level lower than";
+    public int DisplayPriority => 0;
+    public bool Check(dynamic arg) => DalamudApi.ClientState.LocalPlayer?.Level <= arg;
+    public string GetTooltip(CondConfig cfg) => null;
+    public string GetSelectableTooltip(CondConfig cfg) => null;
+    public void Draw(CondConfig cfg)
+    {
+        var _ = (int)cfg.Arg;
+        if (ImGui.SliderInt("##LevelLowerThan", ref _, 0, 100))
+        {
+            cfg.Arg = _;
+            Bartender.Configuration.Save();
+        }
+    }
+    public dynamic GetDefaultArg(CondConfig cfg) => 0;
 }
 
 [MiscCondition]

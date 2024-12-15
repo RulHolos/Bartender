@@ -267,11 +267,11 @@ public static class ConditionSetUI
                 }
 
                 ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
-                if (ImGui.BeginCombo("##Category", selectedCat.CategoryName, ImGuiComboFlags.NoArrowButton))
+                if (ImGui.BeginCombo("##Category", selectedCat?.CategoryName ?? "Invalid Condition", ImGuiComboFlags.NoArrowButton))
                 {
                     foreach (var (category, list) in ConditionManager.ConditionCategories)
                     {
-                        if (!ImGui.Selectable(category.CategoryName, category.GetType() == selectedCat.GetType()))
+                        if (!ImGui.Selectable(category.CategoryName, category.GetType() == selectedCat?.GetType()))
                             continue;
 
                         var condition = list[0];
@@ -288,7 +288,7 @@ public static class ConditionSetUI
 
                 ImGui.NextColumn();
 
-                var conditionList = ConditionManager.ConditionCategories.FirstOrDefault(t => t.category.GetType() == selectedCat.GetType()).conditions;
+                var conditionList = ConditionManager.ConditionCategories.FirstOrDefault(t => t.category.GetType() == selectedCat?.GetType()).conditions;
                 var drawable = selectedCond as IDrawableCondition;
                 var drawExtra = true;
                 if (conditionList != null)

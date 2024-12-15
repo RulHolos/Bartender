@@ -113,8 +113,15 @@ public static class ConditionManager
 
     public static ICondition GetCondition(string id) => Conditions.TryGetValue(id, out var condition) ? condition : null;
 
-    public static IConditionCategory GetConditionCategory(ICondition condition) => CategoryMap[condition];
-    public static IConditionCategory GetConditionCategory(string id) => GetConditionCategory(GetCondition(id));
+    public static IConditionCategory? GetConditionCategory(ICondition condition)
+    {
+        if (condition == null)
+            return null;
+        if (CategoryMap.TryGetValue(condition, out var category))
+            return category;
+        return null;
+    }
+    public static IConditionCategory? GetConditionCategory(string id) => GetConditionCategory(GetCondition(id));
 
     public static bool CheckCondition(string id, dynamic arg = null, bool negate = false)
     {
