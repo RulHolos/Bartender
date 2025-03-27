@@ -15,6 +15,7 @@ Allows for automation too!</Description>
     <RootNamespace>Bartender</RootNamespace>
     <SignAssembly>False</SignAssembly>
     <RepositoryUrl>https://github.com/RulHolos/Bartender</RepositoryUrl>
+    <TargetFramework>net9.0-windows7.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -40,6 +41,10 @@ Allows for automation too!</Description>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="DalamudPackager" Version="11.0.0" />
+    <PackageReference Update="DalamudPackager" Version="12.0.0" />
+    <Reference Include="InteropGenerator.Runtime">
+      <Private>false</Private>
+      <HintPath>$(DalamudLibPath)InteropGenerator.Runtime.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

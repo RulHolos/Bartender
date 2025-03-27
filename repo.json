@@ -9,7 +9,7 @@
         "TestingAssemblyVersion": "1.1.5.0",
         "RepoUrl": "https://github.com/RulHolos/Bartender",
         "ApplicableVersion": "any",
-        "DalamudApiLevel": 11,
+        "DalamudApiLevel": 12,
         "Tags": [
             "hotbar",
             "ui",

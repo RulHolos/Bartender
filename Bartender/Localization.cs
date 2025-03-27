@@ -9,7 +9,7 @@ namespace Bartender;
 
 public static class Localization
 {
-    private static readonly string[] SupportedLangCodes = { "en", "fr", "de" };
+    private static readonly string[] SupportedLangCodes = ["en", "fr", "de"];
     public static Dictionary<string, string> LangDict;
     private static Dictionary<string, string> FallbackDict;
 
@@ -18,6 +18,7 @@ public static class Localization
 
     private static string LangCode { get; set; } = FallbackLangCode;
 
+    public static void Setup() => Setup(DalamudApi.PluginInterface.UiLanguage);
     public static void Setup(string langCode)
     {
         if (LangDict != null)
@@ -62,9 +63,9 @@ public static class Localization
     {
         try
         {
-            if (LangDict.TryGetValue(key, out string s))
+            if (LangDict.TryGetValue(key, out var s))
                 return string.Format(s, arguments);
-            else if (FallbackDict.TryGetValue(key, out string s2))
+            else if (FallbackDict.TryGetValue(key, out var s2))
                 return string.Format(s2, arguments);
             return key;
         }

@@ -78,7 +78,7 @@ public unsafe class Bartender : IDalamudPlugin
         {
             IpcProvider.Init();
 
-            Localization.Setup(DalamudApi.PluginInterface.UiLanguage);
+            Localization.Setup();
             Game.Initialize();
             ConditionManager.Initialize();
 
@@ -146,11 +146,11 @@ public unsafe class Bartender : IDalamudPlugin
     public void BarSave(string command, string arguments)
     {
         if (arguments.IsNullOrEmpty())
-            DalamudApi.ChatGui.PrintError("Wrong arguments. Usage: /barsave <profile name>");
+            DalamudApi.ChatGui.PrintError(Localization.Get("error.Usage") + "/barsave <profile name>");
 
         TransformArguments(ref arguments);
 
-        ProfileConfig prof = Configuration.ProfileConfigs.Find(x => x.Name == arguments);
+        ProfileConfig? prof = Configuration.ProfileConfigs.Find(x => x.Name == arguments);
         if (prof == null)
             return;
 
@@ -164,14 +164,14 @@ public unsafe class Bartender : IDalamudPlugin
     public void BarLoad(string command, string arguments)
     {
         if (arguments.IsNullOrEmpty())
-            DalamudApi.ChatGui.PrintError("Wrong arguments. Usage: /barload <profile name>");
+            DalamudApi.ChatGui.PrintError(Localization.Get("error.Usage") + "/barload <profile name>");
 
         TransformArguments(ref arguments);
 
         ProfileConfig? profile = Configuration!.ProfileConfigs.Find(profile => profile.Name == arguments);
         if (profile == null)
         {
-            DalamudApi.ChatGui.PrintError($"The profile '{arguments}' does not exist.");
+            DalamudApi.ChatGui.PrintError(Localization.Get("error.ProfileNull", arguments));
             return;
         }
         BarControl(profile!, false);
@@ -183,18 +183,19 @@ public unsafe class Bartender : IDalamudPlugin
     public void BarClear(string command, string arguments)
     {
         if (arguments.IsNullOrEmpty())
-            DalamudApi.ChatGui.PrintError("Wrong arguments. Usage: /barclear <profile name>");
+            DalamudApi.ChatGui.PrintError(Localization.Get("error.Usage") + "/barclear <profile name>");
 
         TransformArguments(ref arguments);
 
         ProfileConfig? profile = Configuration!.ProfileConfigs.Find(profile => profile.Name == arguments);
         if (profile == null)
         {
-            DalamudApi.ChatGui.PrintError($"The profile '{arguments}' does not exist.");
+            DalamudApi.ChatGui.PrintError(Localization.Get("error.ProfileNull", arguments));
             return;
         }
         BarControl(profile!, true);
     }
+    public void BarClear(string arguments) => BarClear("/barclear", arguments);
 
     private void BarControl(ProfileConfig profile, bool clear)
     {
@@ -223,7 +224,7 @@ public unsafe class Bartender : IDalamudPlugin
     {
         Regex reg = new(@"\{(\w+)\}", RegexOptions.IgnoreCase);
 
-        args = reg.Replace(args, match =>
+        reg.Replace(args, match =>
         {
             string vari = match.Groups[1].Value;
             string replacement = string.Empty;
@@ -251,7 +252,8 @@ public unsafe class Bartender : IDalamudPlugin
 
     private void Update(IFramework framework)
     {
-        if (!isPluginReady) return;
+        if (!isPluginReady)
+            return;
 
         Configuration.DoAutomaticBackup();
 
@@ -264,7 +266,7 @@ public unsafe class Bartender : IDalamudPlugin
                 continue;
             else if (!profile.IsAlreadyAutomaticallySet && Configuration.ConditionSets[profile.ConditionSet].Checked)
             {
-                BarLoad("/barload", profile.Name);
+                BarLoad(profile.Name);
                 profile.IsAlreadyAutomaticallySet = true;
             }
             else if (profile.IsAlreadyAutomaticallySet && !Configuration.ConditionSets[profile.ConditionSet].Checked)

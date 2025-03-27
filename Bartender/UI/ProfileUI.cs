@@ -49,7 +49,7 @@ public static class ProfileUI
                         newProfile.Slots = PopulateProfileHotbars();
                     AddProfile(newProfile);
                 }
-                ImGuiEx.SetItemTooltip(Localization.Get("tooltip.CreateProfile"));
+                ImGuiEx.SetLocalizedTooltip("tooltip.CreateProfile");
                 ImGui.SameLine();
             }
 
@@ -60,7 +60,7 @@ public static class ProfileUI
                 catch { import = string.Empty; }
                 ImportProfile(import);
             }
-            ImGuiEx.SetItemTooltip(Localization.Get("tooltip.ImportProfile"));
+            ImGuiEx.SetLocalizedTooltip("tooltip.ImportProfile");
 
             ImGuiComponents.HelpMarker(Localization.Get("tooltip.ProfileHelp"));
         }
@@ -110,8 +110,6 @@ public static class ProfileUI
             }
             ImGui.PopStyleColor();
 
-            if (ImGui.IsItemActive() && ImGui.IsMouseDown(ImGuiMouseButton.Left))
-                ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeNS);
             if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
             {
                 ImGuiEx.SetupSlider(true, ImGui.GetItemRectSize().Y + ImGui.GetStyle().ItemSpacing.Y, (hitInterval, increment, closing) =>
@@ -127,9 +125,9 @@ public static class ProfileUI
                 if (ImGui.MenuItem(Localization.Get("btn.SaveHotbars")))
                     SaveProfile(profile, i);
                 if (ImGui.MenuItem(Localization.Get("btn.LoadProfile")))
-                    Bartender.Plugin.BarLoad("/barload", profile.Name);
+                    Bartender.Plugin.BarLoad(profile.Name);
                 if (ImGui.MenuItem(Localization.Get("btn.ClearHotbars")))
-                    Bartender.Plugin.BarClear("/barclear", profile.Name);
+                    Bartender.Plugin.BarClear(profile.Name);
 
                 ImGui.Separator();
 
@@ -334,8 +332,6 @@ public static class ProfileUI
                 var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(action.Icon));
                 Vector4 slotColor = action.Transparent ? new Vector4(0, 0, 0, 1f) : new Vector4(0);
                 ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new Vector2(40), default, new Vector2(1f, 1f), 0, slotColor);
-                if (ImGui.IsItemActive() && ImGui.IsMouseDown(ImGuiMouseButton.Left))
-                    ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEW);
                 if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
                 {
                     ImGuiEx.SetupSlider(false, ImGui.GetItemRectSize().X + ImGui.GetStyle().ItemSpacing.X, (hitInterval, increment, closing) =>

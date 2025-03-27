@@ -20,6 +20,9 @@ public static class ImGuiEx
             ImGui.SetTooltip(s);
     }
 
+    public static void SetLocalizedTooltip(string s, ImGuiHoveredFlags flags = ImGuiHoveredFlags.None)
+        => SetItemTooltip(Localization.Get(s), flags);
+
     private static bool SliderEnabled = false;
     private static bool SliderVertical = false;
     private static float SliderInterval = 0;

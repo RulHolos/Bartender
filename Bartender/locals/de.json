@@ -42,6 +42,9 @@
     "notify.ProfileExported": "Profil exportiert und in die Zwischenablage kopiert: {0}",
     "notify.ConditionSetExported": "Bedingungen exportiert und in die Zwischenablage kopiert: {0}",
 
+    "error.ProfileNull": "Das Profil '{0}' existiert nicht.",
+    "error.Usage": "Falsche Argumente. Verwendung: ",
+
     "conf.ExportOnDelete": "Exportieren beim Löschen",
     "conf.PopulateWhenCreatingProfile": "Neu erstellte Profile mit aktuellen Menüs füllen",
 

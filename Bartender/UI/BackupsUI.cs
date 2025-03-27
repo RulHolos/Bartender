@@ -36,7 +36,7 @@ public static class BackupsUI
             ImGui.Text($"Selected: {(SelectedFile != string.Empty ? GetReadableDate(SelectedFile) : "...")}");
             if (ImGui.BeginListBox("##Automatic Backups"))
             {
-                foreach (string file in Directory.EnumerateFiles(Bartender.Configuration.BackupFolder.FullName))
+                foreach (string file in Directory.EnumerateFiles(Bartender.Configuration.BackupFolder.FullName).Reverse())
                 {
                     if (ImGui.Selectable(GetReadableDate(file), SelectedFile == file))
                     {

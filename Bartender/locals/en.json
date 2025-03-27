@@ -42,6 +42,9 @@
     "notify.ProfileExported": "Profile exported and copied to the clipboard: {0}",
     "notify.ConditionSetExported": "Condition Set exported and copied to the clipboard: {0}",
 
+    "error.ProfileNull": "The profile '{0}' does not exist.",
+    "error.Usage": "Wrong arguments. Usage: ",
+
     "conf.ExportOnDelete": "Export on Delete",
     "conf.PopulateWhenCreatingProfile": "Populate newly created profiles with current bars",
 

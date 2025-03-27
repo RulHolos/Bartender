@@ -42,6 +42,9 @@
     "notify.ProfileExported": "Profil exporté et copié dans le presse-papier : {0}",
     "notify.ConditionSetExported": "Set de condition exporté et copié dans le presse-papier : {0}",
 
+    "error.ProfileNull": "Le profil '{0}' n'existe pas.",
+    "error.Usage": "Mauvais arguments. Utilisation: ",
+
     "conf.ExportOnDelete": "Exporter à la suppression",
     "conf.PopulateWhenCreatingProfile": "Remplir les profils nouvellement créés avec les barres actuelles",
 

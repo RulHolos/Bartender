@@ -6,7 +6,7 @@
     "Punchline": "Save and load hotbars into profiles, re-use them later, profit.",
     "Description": "Save and load hotbars with macros and/or chat commands. We all need more than 10 hotbars, well now we do have those.",
     "ApplicableVersion": "any",
-    "DalamudApiLevel": 11,
+    "DalamudApiLevel": 12,
     "Tags": [
         "qol",
         "hotbar",
