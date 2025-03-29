@@ -246,8 +246,6 @@ public unsafe class Bartender : IDalamudPlugin
 
             return replacement;
         });
-
-        DalamudApi.ChatGui.PrintError(args);
     }
 
     #endregion
