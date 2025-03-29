@@ -148,21 +148,21 @@ public class PluginCommandManager<T> : IDisposable where T : IDalamudPlugin
     {
         var handlerDelegate = (IReadOnlyCommandInfo.HandlerDelegate)Delegate.CreateDelegate(typeof(IReadOnlyCommandInfo.HandlerDelegate), plugin, method);
 
-        var command = handlerDelegate.Method.GetCustomAttribute<CommandAttribute>();
-        var aliases = handlerDelegate.Method.GetCustomAttribute<AliasesAttribute>();
-        var helpMessage = handlerDelegate.Method.GetCustomAttribute<HelpMessageAttribute>();
-        var doNotShowInHelp = handlerDelegate.Method.GetCustomAttribute<DoNotShowInHelpAttribute>();
+        CommandAttribute? command = handlerDelegate.Method.GetCustomAttribute<CommandAttribute>();
+        AliasesAttribute? aliases = handlerDelegate.Method.GetCustomAttribute<AliasesAttribute>();
+        HelpMessageAttribute? helpMessage = handlerDelegate.Method.GetCustomAttribute<HelpMessageAttribute>();
+        DoNotShowInHelpAttribute? doNotShowInHelp = handlerDelegate.Method.GetCustomAttribute<DoNotShowInHelpAttribute>();
 
-        var commandInfo = new CommandInfo(handlerDelegate)
+        CommandInfo? commandInfo = new(handlerDelegate)
         {
             HelpMessage = helpMessage?.HelpMessage ?? string.Empty,
             ShowInHelp = doNotShowInHelp == null
         };
 
-        var commandInfoTuple = new List<(string, CommandInfo)>
-        {
+        List<(string, CommandInfo)> commandInfoTuple =
+        [
             (command?.Command, commandInfo)
-        };
+        ];
         if (aliases != null)
         {
             commandInfoTuple.AddRange(aliases.Aliases.Select(alias => (alias, commandInfo)));

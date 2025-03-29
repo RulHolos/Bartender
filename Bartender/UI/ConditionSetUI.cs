@@ -15,7 +15,7 @@ public static class ConditionSetUI
 {
     public static CondSetConfig? SelectedSet;
     public static int? SelectedSetId;
-    private static readonly List<string> BinaryOperators = ["&&", " | | ", " ==", " !="];
+    private static readonly List<string> BinaryOperators = ["&&", " | | ", " ==", " !="]; // Don't ask why the weird spaces, it's...weird.
 
     public static void Draw(Vector2 iconButtonSize)
     {

@@ -95,7 +95,7 @@ public unsafe class Bartender : IDalamudPlugin
 
     public void Reload()
     {
-        Configuration = (Configuration)DalamudApi.PluginInterface.GetPluginConfig() ?? new();
+        Configuration = DalamudApi.PluginInterface.GetPluginConfig() as Configuration ?? new();
         Configuration.Initialize();
         Configuration.UpdateVersion();
         Configuration.Save();
@@ -222,9 +222,12 @@ public unsafe class Bartender : IDalamudPlugin
 
     private void TransformArguments(ref string args)
     {
+        if (DalamudApi.ClientState.LocalPlayer == null)
+            return;
+
         Regex reg = new(@"\{(\w+)\}", RegexOptions.IgnoreCase);
 
-        reg.Replace(args, match =>
+        args = reg.Replace(args, match =>
         {
             string vari = match.Groups[1].Value;
             string replacement = string.Empty;
@@ -243,6 +246,8 @@ public unsafe class Bartender : IDalamudPlugin
 
             return replacement;
         });
+
+        DalamudApi.ChatGui.PrintError(args);
     }
 
     #endregion
