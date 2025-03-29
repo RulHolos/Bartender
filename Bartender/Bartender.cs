@@ -240,6 +240,7 @@ public unsafe class Bartender : IDalamudPlugin
                     replacement = DalamudApi.ClientState.LocalPlayer.ClassJob.Value.Abbreviation.ToString();
                     break;
                 case "lvl":
+                case "level":
                     replacement = DalamudApi.ClientState.LocalPlayer.Level.ToString();
                     break;
             }
