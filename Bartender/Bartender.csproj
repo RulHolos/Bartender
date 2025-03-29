@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="Dalamud.Plugin.Bootstrap.targets" />
+<Project Sdk="Dalamud.NET.Sdk/12.0.2">
 
   <PropertyGroup>
-    <Version>1.1.6</Version>
     <Description>Save and load hotbar profiles with chat commands and/or macros.
 Allows for automation too!</Description>
     <PackageProjectUrl>https://github.com/RulHolos/Bartender</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
-    <AssemblyVersion>1.1.6</AssemblyVersion>
-    <FileVersion>1.1.6.0</FileVersion>
-    <AssemblyName>Bartender</AssemblyName>
-    <RootNamespace>Bartender</RootNamespace>
+    <AssemblyVersion>1.1.6.0</AssemblyVersion>
     <SignAssembly>False</SignAssembly>
     <RepositoryUrl>https://github.com/RulHolos/Bartender</RepositoryUrl>
-    <TargetFramework>net9.0-windows7.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -38,13 +32,5 @@ Allows for automation too!</Description>
     <Content Include="locals\fr.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="DalamudPackager" Version="12.0.0" />
-    <Reference Include="InteropGenerator.Runtime">
-      <Private>false</Private>
-      <HintPath>$(DalamudLibPath)InteropGenerator.Runtime.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>

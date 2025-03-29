@@ -1,12 +1,9 @@
 {
     "Author": "Rül Hölos",
     "Name": "Bartender",
-    "InternalName": "Bartender",
     "RepoUrl": "https://github.com/RulHolos/Bartender",
     "Punchline": "Save and load hotbars into profiles, re-use them later, profit.",
     "Description": "Save and load hotbars with macros and/or chat commands. We all need more than 10 hotbars, well now we do have those.",
-    "ApplicableVersion": "any",
-    "DalamudApiLevel": 12,
     "Tags": [
         "qol",
         "hotbar",
