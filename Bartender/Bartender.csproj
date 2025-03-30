@@ -3,14 +3,14 @@
   <Import Project="Dalamud.Plugin.Bootstrap.targets" />
 
   <PropertyGroup>
-    <Version>1.1.6</Version>
+    <Version>1.1.6.1</Version>
     <Description>Save and load hotbar profiles with chat commands and/or macros.
 Allows for automation too!</Description>
     <PackageProjectUrl>https://github.com/RulHolos/Bartender</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
-    <AssemblyVersion>1.1.6</AssemblyVersion>
-    <FileVersion>1.1.6.0</FileVersion>
+    <AssemblyVersion>1.1.6.1</AssemblyVersion>
+    <FileVersion>1.1.6.1</FileVersion>
     <AssemblyName>Bartender</AssemblyName>
     <RootNamespace>Bartender</RootNamespace>
     <SignAssembly>False</SignAssembly>

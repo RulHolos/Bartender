@@ -10,8 +10,8 @@ namespace Bartender;
 public static class Localization
 {
     private static readonly string[] SupportedLangCodes = ["en", "fr", "de"];
-    public static Dictionary<string, string> LangDict;
-    private static Dictionary<string, string> FallbackDict;
+    public static Dictionary<string, string>? LangDict;
+    private static Dictionary<string, string>? FallbackDict;
 
     private const string FallbackLangCode = "en";
     private const string LocDirectory = "locals";

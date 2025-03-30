@@ -39,6 +39,7 @@ public class ProfileHotbar : Window, IDisposable
     {
         SizeConstraints = new WindowSizeConstraints { MinimumSize = new Vector2(50, 50), MaximumSize = ImGuiHelpers.MainViewport.Size };
         ResetFlags();
+        RespectCloseHotkey = false;
     }
 
     public override void Draw()

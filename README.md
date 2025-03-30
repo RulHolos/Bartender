@@ -1,6 +1,6 @@
 <p align="center" width="50%">
     <img width="20%" src="Bartender/images/icon.png">
-</p><h1 align="center">Bartender (v1.1.6.0)</h1>
+</p><h1 align="center">Bartender (v1.1.6.1)</h1>
 
 Bartender is a FFXIV plugin which allows you to save and load your hotbars, mimicking vanilla's `/hotbar copy` command.
 
@@ -39,7 +39,7 @@ Example: `/barload {jobShort}-test` is the same as `/boarload RPR-test` (if you'
 The currently available variables are:
 - `job` - This is the name of the class/job in the game's lang. *Warning: in some languages, this name is all lowercase.* (e.g: reaper)
 - `jobshort` - This is the abbreviated name of the class/job (e.g: RPR)
-- `lvl` - The level of your current class/job
+- `lvl`/`level` - The level of your current class/job
 
 Note: The case doesn't matter for the variable name. `job` will be parsed the same as `jOB`.
 
