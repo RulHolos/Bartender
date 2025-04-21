@@ -408,9 +408,12 @@ public static class ProfileUI
                 string hint = slot->PopUpKeybindHintString;
 
                 string fullText = $"{name} {hint}";
+
+                var data = slot->CommandType == HotbarSlotType.Macro ? Tuple.Create(slot->CommandId, slot->CommandType) : Tuple.Create(slot->OriginalApparentActionId, slot->OriginalApparentSlotType);
+
                 int icon = slot->GetIconIdForSlot(slot->OriginalApparentSlotType, slot->OriginalApparentActionId);
-                
-                generatedSlots[hotbars, i] = new HotbarSlot(slot->OriginalApparentActionId, slot->OriginalApparentSlotType, icon, fullText);
+
+                generatedSlots[hotbars, i] = new HotbarSlot(data.Item1, data.Item2, icon, fullText);
             }
         }
         return generatedSlots;
