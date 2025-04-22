@@ -137,6 +137,13 @@ public static class ProfileUI
                     NotificationManager.Display(Localization.Get("notify.ProfileExported", profile.Name));
                 }
 
+                if (ImGui.MenuItem(Localization.Get("text.ExportXIVBARS")))
+                {
+                    ImGui.SetClipboardText(ProfileConfig.ToXivBars(profile));
+                    NotificationManager.Display(Localization.Get("notify.ProfileExportedXIVBARS", profile.Name));
+                }
+                ImGuiEx.SetItemTooltip("Warning: Doesn't work on other languages than English.\nDoesn't support role actions due to system limitations.");
+
                 ImGui.Separator();
 
                 ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetColorU32(ImGui.GetIO().KeyShift ? ImGuiCol.Text : ImGuiCol.TextDisabled));
@@ -174,6 +181,13 @@ public static class ProfileUI
     {
         ImGui.Columns(2, $"BartenderList-{SelectedProfileId}", false);
         ImGui.PushID((int)SelectedProfileId);
+
+        if (ImGui.Button("gdfg"))
+        {
+            DalamudApi.PluginLog.Info(SelectedProfile.Slots[0, 0].CommandType.ToString());
+            DalamudApi.PluginLog.Info(SelectedProfile.Slots[0, 1].CommandType.ToString());
+            DalamudApi.PluginLog.Info(SelectedProfile.Slots[0, 2].CommandType.ToString());
+        }
 
         float displaySize = Bartender.Configuration.IconDisplaySize;
         try

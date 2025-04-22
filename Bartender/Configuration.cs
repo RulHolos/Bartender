@@ -92,6 +92,35 @@ public class ProfileConfig
         catch { config = null; }
         return config;
     }
+
+    public static string ToXivBars(ProfileConfig conf)
+    {
+        string finalString = string.Empty;
+        string curJob;
+        if (DalamudApi.ClientState.LocalPlayer != null)
+            curJob = DalamudApi.ClientState.LocalPlayer.ClassJob.Value.Abbreviation.ToString().ToUpper();
+        else
+            curJob = "RPR"; // RPR by default because it's my plugin and I do what I want with it. :3
+        // Probably should find a better way to default tho.
+
+        for (int i = 0; i < Bartender.NUM_OF_BARS; i++)
+        {
+            for (int j = 0; j < Bartender.NUM_OF_SLOTS; j++)
+            {
+                var slot = conf.Slots[i, j];
+                finalString += slot.CommandType switch
+                {
+                    HotbarSlotType.GeneralAction => $"g{slot.CommandId}",
+                    HotbarSlotType.MainCommand => $"c{slot.CommandId}",
+                    _ => slot.CommandId,
+                };
+
+                finalString += ",";
+            }
+        }
+
+        return $"https://www.xivbars.com/job/{curJob}/new?l=1&s={finalString}".TrimEnd(',');
+    }
 }
 
 public class CondSetConfig

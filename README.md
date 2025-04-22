@@ -19,7 +19,7 @@ Word to gamepad players: Bartender doesn't support cross hotbars.
 
 ## Planned features
 
-* Currently none
+* Export to xivbars
 
 ## Usage
 

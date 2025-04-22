@@ -15,6 +15,7 @@
     "text.None": "---",
     "text.HotbarsToLoad": "Zu ladende Menüs mit '/barload'",
     "text.Export": "Exportieren",
+    "text.ExportXIVBARS": "XivBars Exportieren",
 
     "selectable.DeleteProfile": "Profil '{0}' permanent löschen",
 

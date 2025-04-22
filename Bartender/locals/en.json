@@ -15,6 +15,7 @@
     "text.None": "---",
     "text.HotbarsToLoad": "Hotbars to load when using '/barload'",
     "text.Export": "Export",
+    "text.ExportXIVBARS": "Export to XivBars",
 
     "selectable.DeleteProfile": "Delete profile '{0}' permanently",
 
@@ -41,6 +42,7 @@
     "notify.ProfileImported": "Profile imported: {0}",
     "notify.ProfileExported": "Profile exported and copied to the clipboard: {0}",
     "notify.ConditionSetExported": "Condition Set exported and copied to the clipboard: {0}",
+    "notify.ProfileExportedXIVBARS": "The profile has been exported for XivBars",
 
     "error.ProfileNull": "The profile '{0}' does not exist.",
     "error.Usage": "Wrong arguments. Usage: ",
