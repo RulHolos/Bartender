@@ -231,7 +231,7 @@ public unsafe class Bartender : IDalamudPlugin
         {
             string vari = match.Groups[1].Value;
             string replacement = string.Empty;
-            switch (vari.ToLower())
+            switch (vari.ToLower().Trim())
             {
                 case "job": // The name of the job is all lowercase in french.
                     replacement = DalamudApi.ClientState.LocalPlayer.ClassJob.Value.Name.ToString();

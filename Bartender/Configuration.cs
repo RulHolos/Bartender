@@ -119,7 +119,7 @@ public class ProfileConfig
             }
         }
 
-        return $"https://www.xivbars.com/job/{curJob}/new?l=1&s={finalString}".TrimEnd(',');
+        return $"https://www.xivbars.com/{DalamudApi.PluginInterface.UiLanguage}/job/{curJob}/new?l=1&s={finalString}".TrimEnd(',');
     }
 }
 

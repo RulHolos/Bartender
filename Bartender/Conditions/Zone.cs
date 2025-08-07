@@ -1,5 +1,5 @@
 using Bartender.UI.Utils;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 
 namespace Bartender.Conditions;

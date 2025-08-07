@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Dalamud.NET.Sdk/12.0.2">
+<Project Sdk="Dalamud.NET.Sdk/13.0.0">
 
   <PropertyGroup>
     <Description>Save and load hotbar profiles with chat commands and/or macros.
@@ -7,7 +7,7 @@ Allows for automation too!</Description>
     <PackageProjectUrl>https://github.com/RulHolos/Bartender</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
-    <AssemblyVersion>1.1.7.0</AssemblyVersion>
+    <AssemblyVersion>1.1.7.1</AssemblyVersion>
     <SignAssembly>False</SignAssembly>
     <RepositoryUrl>https://github.com/RulHolos/Bartender</RepositoryUrl>
   </PropertyGroup>

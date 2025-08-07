@@ -1,7 +1,7 @@
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -102,7 +102,7 @@ public static class ConditionSetUI
                 SelectedSetId = i;
             }
             ImGui.PopStyleColor();
-            if (ImGui.BeginPopupContextItem())
+            if (ImGui.BeginPopupContextItem($"automation_list_ctx_menu_{i}"))
             {
                 ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetColorU32(ImGui.GetIO().KeyShift ? ImGuiCol.Text : ImGuiCol.TextDisabled));
                 if (ImGui.Selectable($"Delete Condition Set '{set.Name}' permanently") && ImGui.GetIO().KeyShift)
@@ -178,7 +178,7 @@ public static class ConditionSetUI
                 var selectedCond = ConditionManager.GetCondition(condCfg.ID);
                 var selectedCat = ConditionManager.GetConditionCategory(selectedCond);
 
-                ImGui.Columns(3, null, false);
+                ImGui.Columns(3, default, false);
 
                 ImGuiComponents.IconButton(FontAwesomeIcon.ArrowsAltV);
                 if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))

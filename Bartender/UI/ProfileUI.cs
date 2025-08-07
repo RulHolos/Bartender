@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
 using System.Collections.Generic;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using Bartender.UI.Utils;
@@ -116,11 +116,11 @@ public static class ProfileUI
                 {
                     if (hitInterval)
                         ShiftProfile(Bartender.Configuration.ProfileConfigs.IndexOf(profile), increment);
-                    ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeNS);
+                    ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeNs);
                 });
             }
             
-            if (ImGui.BeginPopupContextItem())
+            if (ImGui.BeginPopupContextItem($"profile_context_menu_{i}"))
             {
                 if (ImGui.MenuItem(Localization.Get("btn.SaveHotbars")))
                     SaveProfile(profile, i);
@@ -136,13 +136,6 @@ public static class ProfileUI
                     ImGui.SetClipboardText(ProfileConfig.ToBase64(profile));
                     NotificationManager.Display(Localization.Get("notify.ProfileExported", profile.Name));
                 }
-
-                if (ImGui.MenuItem(Localization.Get("text.ExportXIVBARS")))
-                {
-                    ImGui.SetClipboardText(ProfileConfig.ToXivBars(profile));
-                    NotificationManager.Display(Localization.Get("notify.ProfileExportedXIVBARS", profile.Name));
-                }
-                ImGuiEx.SetItemTooltip("Warning: Doesn't work on other languages than English.\nDoesn't support role actions due to system limitations.");
 
                 ImGui.Separator();
 
@@ -182,23 +175,16 @@ public static class ProfileUI
         ImGui.Columns(2, $"BartenderList-{SelectedProfileId}", false);
         ImGui.PushID((int)SelectedProfileId);
 
-        if (ImGui.Button("gdfg"))
-        {
-            DalamudApi.PluginLog.Info(SelectedProfile.Slots[0, 0].CommandType.ToString());
-            DalamudApi.PluginLog.Info(SelectedProfile.Slots[0, 1].CommandType.ToString());
-            DalamudApi.PluginLog.Info(SelectedProfile.Slots[0, 2].CommandType.ToString());
-        }
-
         float displaySize = Bartender.Configuration.IconDisplaySize;
         try
         {
             var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(SelectedProfile.IconId));
-            ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(displaySize), default, new Vector2(1f, 1f), 0);
+            ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new(displaySize), default, new Vector2(1f, 1f), 0);
         }
         catch (IconNotFoundException)
         {
             var icon = Bartender.IconManager.GetIcon(0);
-            ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(displaySize), default, new Vector2(1f, 1f), 0);
+            ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new(displaySize), default, new Vector2(1f, 1f), 0);
         }
         ImGuiEx.SetItemTooltip(Localization.Get("tooltip.ProfileIcon"));
 
@@ -345,14 +331,14 @@ public static class ProfileUI
                 var action = SelectedProfile.Slots[hotbar, j];
                 var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(action.Icon));
                 Vector4 slotColor = action.Transparent ? new Vector4(0, 0, 0, 1f) : new Vector4(0);
-                ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new Vector2(40), default, new Vector2(1f, 1f), 0, slotColor);
+                ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(40), default, new Vector2(1f, 1f), 0, slotColor);
                 if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
                 {
                     ImGuiEx.SetupSlider(false, ImGui.GetItemRectSize().X + ImGui.GetStyle().ItemSpacing.X, (hitInterval, increment, closing) =>
                     {
                         if (hitInterval)
                             ShiftIcon(hotbar, action, increment);
-                        ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEW);
+                        ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEw);
                     });
                 }
                 else if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))

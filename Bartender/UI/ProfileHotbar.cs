@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
 using Dalamud.Interface.Windowing;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Utility;
 using Dalamud.Logging;
 using System.Collections.Generic;
@@ -110,7 +110,7 @@ public class ProfileHotbar : Window, IDisposable
             if (Bartender.Configuration.ProfileHotbarSlotsIndexes[i] == -1)
             {
                 var icon = Bartender.IconManager.GetIcon(0);
-                ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(displaySize));
+                ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new(displaySize));
             }
             else
             {
@@ -119,7 +119,7 @@ public class ProfileHotbar : Window, IDisposable
                     if (Bartender.Configuration.ProfileConfigs.Count <= Bartender.Configuration.ProfileHotbarSlotsIndexes[i])
                     {
                         var icon = Bartender.IconManager.GetIcon(0);
-                        if (ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(displaySize)))
+                        if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new(displaySize)))
                             Bartender.Plugin.BarLoad("Invalid Profile");
                         ImGuiEx.SetItemTooltip("Invalid Profile");
                     }
@@ -127,14 +127,14 @@ public class ProfileHotbar : Window, IDisposable
                     {
                         ProfileConfig profile = Bartender.Configuration.ProfileConfigs[Bartender.Configuration.ProfileHotbarSlotsIndexes[i]];
                         var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(profile.IconId));
-                        if (ImGui.ImageButton(icon.GetWrapOrEmpty().ImGuiHandle, new(displaySize)))
+                        if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new(displaySize)))
                             Bartender.Plugin.BarLoad(profile.Name);
                         ImGuiEx.SetItemTooltip(profile.Name);
                     }
                 }
                 catch (IconNotFoundException)
                 {
-                    ImGui.ImageButton(Bartender.IconManager.GetIcon(0).GetWrapOrEmpty().ImGuiHandle,
+                    ImGui.ImageButton(Bartender.IconManager.GetIcon(0).GetWrapOrEmpty().Handle,
                         new(displaySize));
                 }
             }

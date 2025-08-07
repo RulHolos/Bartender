@@ -1,6 +1,6 @@
 using Dalamud.Interface.Utility;
 using FFXIVClientStructs.FFXIV.Component.Excel;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Lumina.Excel;
 using System;
 using System.Collections.Generic;
@@ -41,7 +41,7 @@ public static class ImGuiEx
     {
         if (!SliderEnabled) return;
 
-        var popupOpen = !ImGui.IsPopupOpen("_SLIDER") && ImGui.IsPopupOpen(null, ImGuiPopupFlags.AnyPopup);
+        var popupOpen = !ImGui.IsPopupOpen("_SLIDER") && ImGui.IsPopupOpen("", ImGuiPopupFlags.AnyPopup);
         if (!popupOpen)
         {
             ImGuiHelpers.ForceNextWindowMainViewport();
