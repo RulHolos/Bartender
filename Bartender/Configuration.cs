@@ -187,7 +187,7 @@ public class Configuration : IPluginConfiguration
     public List<string> EncodedProfiles = [];
     public List<string> EncodedConditionSets = [];
     public bool ExportOnDelete = false;
-    public bool PopulateWhenCreatingProfile = false;
+    public bool PopulateWhenCreatingProfile = true;
     public bool UsePenumbra = true;
     public float IconDisplaySize = 64.0f;
     public float IconDisplaySizeHotbar = 40.0f;

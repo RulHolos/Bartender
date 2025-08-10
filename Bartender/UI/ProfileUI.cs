@@ -79,24 +79,14 @@ public static class ProfileUI
 
     public static void DrawProfileList()
     {
+        if (Bartender.Configuration.ProfileConfigs.Count == 0)
+            return;
+
         for (int i = 0; i < Bartender.Configuration.ProfileConfigs.Count; i++)
         {
             ImGui.PushID($"Bartender-ProfileLista-{i}");
 
             ProfileConfig profile = Bartender.Configuration.ProfileConfigs[i];
-
-            /*float totalWidth = ImGui.GetContentRegionAvail().X;
-
-            ImGui.Columns(2, $"BartenderProList-{profile.Name}", false);
-
-            float buttonWidth = ImGui.CalcTextSize("↑").X + (ImGui.GetStyle().ItemSpacing.X * 2);
-            buttonWidth += ImGui.CalcTextSize("↓").X + (ImGui.GetStyle().ItemSpacing.X * 2);
-            buttonWidth += ImGui.GetStyle().ItemSpacing.X * 2.0f;
-
-            float firstColumnWidth = totalWidth - buttonWidth;
-            if (firstColumnWidth < 0) firstColumnWidth = 0;
-            ImGui.SetColumnWidth(0, firstColumnWidth);
-            ImGui.SetColumnWidth(1, buttonWidth);*/
 
             if (profile.ConditionSet != -1)
                 ImGui.PushStyleColor(ImGuiCol.Text, Bartender.Configuration.ConditionSets[profile.ConditionSet].Checked ? 0xFF00FF00u : 0xFF0000FFu);
@@ -140,9 +130,9 @@ public static class ProfileUI
                 ImGui.Separator();
 
                 ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetColorU32(ImGui.GetIO().KeyShift ? ImGuiCol.Text : ImGuiCol.TextDisabled));
-                if (ImGui.Selectable(Localization.Get("selectable.DeleteProfile", profile.Name)) && ImGui.GetIO().KeyShift)
+                if (ImGui.Selectable($"{Localization.Get("selectable.DeleteProfile", profile.Name)}##profile_delete_{i}") && ImGui.GetIO().KeyShift)
                 {
-                    RemoveProfile(i);
+                    RemoveProfile(profile);
                     if (SelectedProfile == profile)
                         SelectedProfile = null;
                 }
@@ -172,6 +162,9 @@ public static class ProfileUI
 
     public static void DrawProfileEditor()
     {
+        if (SelectedProfile == null) // Avoid breaking the UI completely if there is no profile created.
+            return;
+
         ImGui.Columns(2, $"BartenderList-{SelectedProfileId}", false);
         ImGui.PushID((int)SelectedProfileId);
 
@@ -298,15 +291,16 @@ public static class ProfileUI
         return Bartender.AddAndExecuteCommand(new AddProfileCommand(cfg));
     }
 
-    public static void RemoveProfile(int i)
+    public static void RemoveProfile(ProfileConfig cfg)
     {
+        DalamudApi.PluginLog.Debug($"Deleting {cfg.Name}");
         if (Bartender.Configuration.ExportOnDelete)
         {
-            ImGui.SetClipboardText(ProfileConfig.ToBase64(SelectedProfile));
-            NotificationManager.Display(Localization.Get("notify.ProfileExported", SelectedProfile.Name));
+            ImGui.SetClipboardText(ProfileConfig.ToBase64(cfg));
+            NotificationManager.Display(Localization.Get("notify.ProfileExported", cfg.Name));
         }
 
-        Bartender.AddAndExecuteCommand(new RemoveProfileCommand(SelectedProfile));
+        Bartender.AddAndExecuteCommand(new RemoveProfileCommand(cfg));
     }
 
     public static void ShiftProfile(int i, bool increment)

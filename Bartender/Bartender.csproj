@@ -19,6 +19,7 @@ Allows for automation too!</Description>
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Bartender.json" />
     <Content Include="images\icon.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <Visible>true</Visible>

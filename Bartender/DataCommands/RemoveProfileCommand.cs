@@ -14,7 +14,7 @@ public class RemoveProfileCommand(ProfileConfig cfg) : DataCommand
     public override void Execute()
     {
         ProfileUI.SelectedProfile = null;
-        Bartender.Configuration.ProfileConfigs.Remove(Bartender.Configuration.ProfileConfigs.Last());
+        Bartender.Configuration.ProfileConfigs.Remove(Config);
         Bartender.Configuration.Save();
     }
 
