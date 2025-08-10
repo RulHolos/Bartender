@@ -1,6 +1,6 @@
 <p align="center" width="50%">
     <img width="20%" src="Bartender/images/icon.png">
-</p><h1 align="center">Bartender (v1.1.7.1)</h1>
+</p><h1 align="center">Bartender (v1.1.8.0)</h1>
 
 Bartender is a FFXIV plugin which allows you to save and load your hotbars, mimicking vanilla's `/hotbar copy` command.
 
@@ -19,6 +19,7 @@ Word to gamepad players: Bartender doesn't support cross hotbars.
 
 ## Planned features
 
+* Mostly bug fixes and qol.
 * Big UI revision coming up (in a long time, see [pinned issue](https://github.com/RulHolos/Bartender/issues/32)).
 
 ## Usage

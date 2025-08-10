@@ -7,7 +7,7 @@ Allows for automation too!</Description>
     <PackageProjectUrl>https://github.com/RulHolos/Bartender</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
-    <AssemblyVersion>1.1.7.1</AssemblyVersion>
+    <AssemblyVersion>1.1.8.0</AssemblyVersion>
     <SignAssembly>False</SignAssembly>
     <RepositoryUrl>https://github.com/RulHolos/Bartender</RepositoryUrl>
   </PropertyGroup>
