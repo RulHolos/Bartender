@@ -172,12 +172,12 @@ public static class ProfileUI
         try
         {
             var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(SelectedProfile.IconId));
-            ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new(displaySize), default, new Vector2(1f, 1f), 0);
+            ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(displaySize, displaySize), default, new Vector2(1f, 1f), 0);
         }
         catch (IconNotFoundException)
         {
             var icon = Bartender.IconManager.GetIcon(0);
-            ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new(displaySize), default, new Vector2(1f, 1f), 0);
+            ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(displaySize, displaySize), default, new Vector2(1f, 1f), 0);
         }
         ImGuiEx.SetItemTooltip(Localization.Get("tooltip.ProfileIcon"));
 

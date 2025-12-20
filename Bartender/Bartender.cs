@@ -84,6 +84,10 @@ public unsafe class Bartender : IDalamudPlugin
 
             isPluginReady = true;
             IpcProvider.Initialized.SendMessage();
+
+            NotificationManager.Display("If you updated Bartender from version 1.1.8.0 to 1.1.8.1, you might need " +
+                "to fix your icons. To do so, load all your bars and save them again.\n\n" +
+                "This does not affect usability, but will create some errors.", NotificationType.Warning, 60);
             
         }
         catch (Exception e)
@@ -145,7 +149,7 @@ public unsafe class Bartender : IDalamudPlugin
     [HelpMessage("Saves the current hotbars into an existing profile. Usage: /barsave <profile name>")]
     public void BarSave(string command, string arguments)
     {
-        if (arguments.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(arguments))
             DalamudApi.ChatGui.PrintError(Localization.Get("error.Usage") + "/barsave <profile name>");
 
         TransformArguments(ref arguments);
@@ -163,7 +167,7 @@ public unsafe class Bartender : IDalamudPlugin
     [HelpMessage("Load a bar profile (meant for macros). Usage: /barload <profile name>")]
     public void BarLoad(string command, string arguments)
     {
-        if (arguments.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(arguments))
             DalamudApi.ChatGui.PrintError(Localization.Get("error.Usage") + "/barload <profile name>");
 
         TransformArguments(ref arguments);
@@ -182,7 +186,7 @@ public unsafe class Bartender : IDalamudPlugin
     [HelpMessage("Clears a bar profile (meant for macros). Usage: /barclear <profile name>")]
     public void BarClear(string command, string arguments)
     {
-        if (arguments.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(arguments))
             DalamudApi.ChatGui.PrintError(Localization.Get("error.Usage") + "/barclear <profile name>");
 
         TransformArguments(ref arguments);

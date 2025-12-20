@@ -93,6 +93,7 @@ public class ProfileConfig
         return config;
     }
 
+    [Obsolete("Functionality is not provided anymore. Will be removed in next update.", true)]
     public static string ToXivBars(ProfileConfig conf)
     {
         string finalString = string.Empty;

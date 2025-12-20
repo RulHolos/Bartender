@@ -1,5 +1,6 @@
 using Dalamud.Interface.Internal;
 using Dalamud.Interface.Textures;
+using Dalamud.Interface.Textures.Internal;
 using Dalamud.Interface.Textures.TextureWraps;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,14 @@ public sealed class IconManager : IDisposable
 
     public ISharedImmediateTexture GetIcon(uint id)
     {
-        /*if (!iconCache.TryGetValue(id, out var ret))
-            iconCache.Add(id, ret = DalamudApi.TextureProvider.GetIcon(id) ??
-                throw new ArgumentException($"Invalid icon id {id}", nameof(id)));*/
-        return DalamudApi.TextureProvider.GetFromGameIcon(new GameIconLookup(id % 1_000_000, id >= 1_000_000));
+        try
+        {
+            return DalamudApi.TextureProvider.GetFromGameIcon(new GameIconLookup(id % 1_000_000, id >= 1_000_000));
+        }
+        catch (IconNotFoundException ex)
+        {
+            return null;
+        }
     }
 
     public void Dispose()

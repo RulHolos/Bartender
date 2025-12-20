@@ -12,7 +12,7 @@ namespace Bartender;
 public unsafe class Game
 {
     public static UIModule* uiModule;
-    public static int CurrentHUDLayout => uiModule->GetAddonConfig()->ModuleData->CurrentHudLayout;
+    public static int CurrentHUDLayout => uiModule->GetAddonConfig()->ActiveDataSet->CurrentHudLayout;
 
     public static void Initialize()
     {

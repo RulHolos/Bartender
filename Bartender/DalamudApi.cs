@@ -73,6 +73,9 @@ public class DalamudApi
     public static IMarketBoard MarketBoard { get; private set; }
 
     [PluginService]
+    public static IPlayerState PlayerState { get; private set; }
+
+    [PluginService]
 #pragma warning disable Dalamud001 // Le type est utilisé à des fins d’évaluation uniquement et est susceptible d’être modifié ou supprimé dans les futures mises à jour. Supprimez ce diagnostic pour continuer.
     public static IConsole Console { get; private set; }
 #pragma warning restore Dalamud001 // Le type est utilisé à des fins d’évaluation uniquement et est susceptible d’être modifié ou supprimé dans les futures mises à jour. Supprimez ce diagnostic pour continuer.

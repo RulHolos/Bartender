@@ -110,7 +110,7 @@ public class ProfileHotbar : Window, IDisposable
             if (Bartender.Configuration.ProfileHotbarSlotsIndexes[i] == -1)
             {
                 var icon = Bartender.IconManager.GetIcon(0);
-                ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new(displaySize));
+                ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(displaySize, displaySize));
             }
             else
             {
@@ -119,7 +119,7 @@ public class ProfileHotbar : Window, IDisposable
                     if (Bartender.Configuration.ProfileConfigs.Count <= Bartender.Configuration.ProfileHotbarSlotsIndexes[i])
                     {
                         var icon = Bartender.IconManager.GetIcon(0);
-                        if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new(displaySize)))
+                        if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(displaySize, displaySize)))
                             Bartender.Plugin.BarLoad("Invalid Profile");
                         ImGuiEx.SetItemTooltip("Invalid Profile");
                     }
@@ -127,7 +127,7 @@ public class ProfileHotbar : Window, IDisposable
                     {
                         ProfileConfig profile = Bartender.Configuration.ProfileConfigs[Bartender.Configuration.ProfileHotbarSlotsIndexes[i]];
                         var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(profile.IconId));
-                        if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new(displaySize)))
+                        if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(displaySize, displaySize)))
                             Bartender.Plugin.BarLoad(profile.Name);
                         ImGuiEx.SetItemTooltip(profile.Name);
                     }
@@ -135,7 +135,7 @@ public class ProfileHotbar : Window, IDisposable
                 catch (IconNotFoundException)
                 {
                     ImGui.ImageButton(Bartender.IconManager.GetIcon(0).GetWrapOrEmpty().Handle,
-                        new(displaySize));
+                        new Vector2(displaySize, displaySize));
                 }
             }
             
