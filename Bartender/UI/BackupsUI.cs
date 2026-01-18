@@ -36,11 +36,14 @@ public static class BackupsUI
             ImGui.Text($"Selected: {(SelectedFile != string.Empty ? GetReadableDate(SelectedFile) : "...")}");
             if (ImGui.BeginListBox("##Automatic Backups"))
             {
-                foreach (string file in Directory.EnumerateFiles(Bartender.Configuration.BackupFolder.FullName).Reverse())
+                if (Directory.Exists(Bartender.Configuration.BackupFolder.FullName))
                 {
-                    if (ImGui.Selectable(GetReadableDate(file), SelectedFile == file))
+                    foreach (string file in Directory.EnumerateFiles(Bartender.Configuration.BackupFolder.FullName).Reverse())
                     {
-                        SelectedFile = file;
+                        if (ImGui.Selectable(GetReadableDate(file), SelectedFile == file))
+                        {
+                            SelectedFile = file;
+                        }
                     }
                 }
                 ImGui.EndListBox();
