@@ -84,11 +84,6 @@ public unsafe class Bartender : IDalamudPlugin
 
             isPluginReady = true;
             IpcProvider.Initialized.SendMessage();
-
-            NotificationManager.Display("If you updated Bartender from version 1.1.8.0 to 1.1.8.1, you might need " +
-                "to fix your icons. To do so, load all your bars and save them again.\n\n" +
-                "This does not affect usability, but will create some errors.", NotificationType.Warning, 60);
-            
         }
         catch (Exception e)
         {
