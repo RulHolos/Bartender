@@ -171,10 +171,10 @@ public static class ProfileUI
         float displaySize = Bartender.Configuration.IconDisplaySize;
         try
         {
-            var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(SelectedProfile.IconId));
+            var icon = Bartender.IconManager.GetIcon(Convert.ToUInt32(SelectedProfile?.IconId ?? 0));
             ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(displaySize, displaySize), default, new Vector2(1f, 1f), 0);
         }
-        catch (IconNotFoundException)
+        catch (Exception ex) // Fallback cuz what
         {
             var icon = Bartender.IconManager.GetIcon(0);
             ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(displaySize, displaySize), default, new Vector2(1f, 1f), 0);
