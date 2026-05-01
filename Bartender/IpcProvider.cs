@@ -12,7 +12,7 @@ public static class IpcProvider
     public const uint Breaking = 1;
     public const uint Features = 1;
     public const uint Build = 8;
-    public const uint Revision = 2;
+    public const uint Revision = 3;
 
     public const string Namespace = "Bartender";
 

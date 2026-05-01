@@ -98,8 +98,8 @@ public class ProfileConfig
     {
         string finalString = string.Empty;
         string curJob;
-        if (DalamudApi.ClientState.LocalPlayer != null)
-            curJob = DalamudApi.ClientState.LocalPlayer.ClassJob.Value.Abbreviation.ToString().ToUpper();
+        if (DalamudApi.ObjectTable.LocalPlayer != null)
+            curJob = DalamudApi.ObjectTable.LocalPlayer.ClassJob.Value.Abbreviation.ToString().ToUpper();
         else
             curJob = "RPR"; // RPR by default because it's my plugin and I do what I want with it. :3
         // Probably should find a better way to default tho.

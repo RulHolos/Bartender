@@ -12,7 +12,7 @@ public class StatusCondition : ICondition, IDrawableCondition, IArgCondition, IC
     public string ConditionName => "Has Status Effect";
     public string CategoryName => "Has Status Effect";
     public int DisplayPriority => 0;
-    public bool Check(dynamic arg) => DalamudApi.ClientState.LocalPlayer is { } player && player.StatusList.Any(x => x.StatusId == (uint)arg);
+    public bool Check(dynamic arg) => DalamudApi.ObjectTable.LocalPlayer is { } player && player.StatusList.Any(x => x.StatusId == (uint)arg);
     public string GetTooltip(CondConfig cfg) => null;
     public string GetSelectableTooltip(CondConfig cfg) => null;
     public void Draw(CondConfig cfg)

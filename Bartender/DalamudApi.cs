@@ -84,6 +84,9 @@ public class DalamudApi
 
     private static PluginCommandManager<IDalamudPlugin> PluginCommandManager;
 
+    [PluginService]
+    public static IObjectTable ObjectTable { get; private set; }
+
     public DalamudApi() { }
     public DalamudApi(IDalamudPlugin plugin) => PluginCommandManager ??= new(plugin);
     public DalamudApi(IDalamudPlugin plugin, IDalamudPluginInterface pluginInterface)

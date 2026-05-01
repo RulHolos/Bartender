@@ -84,7 +84,7 @@ public class WeaponDrawnCondition : ICondition
     public string ID => "wd";
     public string ConditionName => "Weapon Drawn";
     public int DisplayPriority => 0;
-    public bool Check(dynamic arg) => DalamudApi.ClientState.LocalPlayer is { } player && (player.StatusFlags & StatusFlags.WeaponOut) != 0;
+    public bool Check(dynamic arg) => DalamudApi.ObjectTable.LocalPlayer is { } player && (player.StatusFlags & StatusFlags.WeaponOut) != 0;
 }
 
 [MiscCondition]
@@ -125,8 +125,8 @@ public class MinionCondition : ICondition
     public int DisplayPriority => 0;
     public unsafe bool Check(dynamic arg)
     {
-        var minion = DalamudApi.ClientState.LocalPlayer.CurrentMinion;
-        return ((Lumina.Excel.RowRef?)minion) != null && DalamudApi.ClientState.LocalPlayer.CurrentMount == null;
+        var minion = DalamudApi.ObjectTable.LocalPlayer.CurrentMinion;
+        return ((Lumina.Excel.RowRef?)minion) != null && DalamudApi.ObjectTable.LocalPlayer.CurrentMount == null;
     }
 }
 
@@ -138,7 +138,7 @@ public class MountCondition : ICondition
     public int DisplayPriority => 0;
     public unsafe bool Check(dynamic arg)
     {
-        return DalamudApi.ClientState.LocalPlayer.CurrentMount != null;
+        return DalamudApi.ObjectTable.LocalPlayer.CurrentMount != null;
     }
 }
 
@@ -219,7 +219,7 @@ public class LevelHigherThanCondition : ICondition, IDrawableCondition, IArgCond
     public string ID => "lvllw";
     public string ConditionName => "Cur. Level higher than";
     public int DisplayPriority => 0;
-    public bool Check(dynamic arg) => DalamudApi.ClientState.LocalPlayer?.Level >= arg;
+    public bool Check(dynamic arg) => DalamudApi.ObjectTable.LocalPlayer?.Level >= arg;
     public string GetTooltip(CondConfig cfg) => null;
     public string GetSelectableTooltip(CondConfig cfg) => null;
     public void Draw(CondConfig cfg)
@@ -240,7 +240,7 @@ public class LevelLowerThanCondition : ICondition, IDrawableCondition, IArgCondi
     public string ID => "lvlhi";
     public string ConditionName => "Cur. Level lower than";
     public int DisplayPriority => 0;
-    public bool Check(dynamic arg) => DalamudApi.ClientState.LocalPlayer?.Level <= arg;
+    public bool Check(dynamic arg) => DalamudApi.ObjectTable.LocalPlayer?.Level <= arg;
     public string GetTooltip(CondConfig cfg) => null;
     public string GetSelectableTooltip(CondConfig cfg) => null;
     public void Draw(CondConfig cfg)
@@ -261,7 +261,7 @@ public class IsInHomeWorldCondition : ICondition
     public string ID => "hw";
     public string ConditionName => "Is In Home World";
     public int DisplayPriority => 0;
-    public bool Check(dynamic arg) => DalamudApi.ClientState.LocalPlayer?.CurrentWorld.RowId == DalamudApi.ClientState.LocalPlayer?.HomeWorld.RowId;
+    public bool Check(dynamic arg) => DalamudApi.ObjectTable.LocalPlayer?.CurrentWorld.RowId == DalamudApi.ObjectTable.LocalPlayer?.HomeWorld.RowId;
     public string GetTooltip(CondConfig cfg) => null;
     public string GetSelectableTooltip(CondConfig cfg) => "Check if the current character is in their home world";
 }

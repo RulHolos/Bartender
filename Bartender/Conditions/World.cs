@@ -14,7 +14,7 @@ public class WorldCondition : ICondition, IDrawableCondition, IArgCondition, IOn
     public string ConditionName => "World";
     public string CategoryName => "World";
     public int DisplayPriority => 0;
-    public bool Check(dynamic arg) => DalamudApi.ClientState.LocalPlayer?.CurrentWorld.RowId == (uint)arg;
+    public bool Check(dynamic arg) => DalamudApi.ObjectTable.LocalPlayer?.CurrentWorld.RowId == (uint)arg;
     public string GetTooltip(CondConfig cfg) => null;
     public string GetSelectableTooltip(CondConfig cfg) => null;
     public void Draw(CondConfig cfg)
@@ -33,7 +33,7 @@ public class WorldCondition : ICondition, IDrawableCondition, IArgCondition, IOn
         cfg.Arg = world.Value.RowId;
         Bartender.Configuration.Save();
     }
-    public dynamic GetDefaultArg(CondConfig cfg) => DalamudApi.ClientState.LocalPlayer?.HomeWorld.RowId;
+    public dynamic GetDefaultArg(CondConfig cfg) => DalamudApi.ObjectTable.LocalPlayer?.HomeWorld.RowId;
     public void OnImport(CondConfig cfg)
     {
         if (cfg.Arg == 0)

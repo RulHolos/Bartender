@@ -221,7 +221,7 @@ public unsafe class Bartender : IDalamudPlugin
 
     private void TransformArguments(ref string args)
     {
-        if (DalamudApi.ClientState.LocalPlayer == null)
+        if (DalamudApi.ObjectTable.LocalPlayer == null)
             return;
 
         Regex reg = new(@"\{(\w+)\}", RegexOptions.IgnoreCase);
@@ -233,14 +233,14 @@ public unsafe class Bartender : IDalamudPlugin
             switch (vari.ToLower().Trim())
             {
                 case "job": // The name of the job is all lowercase in french.
-                    replacement = DalamudApi.ClientState.LocalPlayer.ClassJob.Value.Name.ToString();
+                    replacement = DalamudApi.ObjectTable.LocalPlayer.ClassJob.Value.Name.ToString();
                     break;
                 case "jobshort":
-                    replacement = DalamudApi.ClientState.LocalPlayer.ClassJob.Value.Abbreviation.ToString();
+                    replacement = DalamudApi.ObjectTable.LocalPlayer.ClassJob.Value.Abbreviation.ToString();
                     break;
                 case "lvl":
                 case "level":
-                    replacement = DalamudApi.ClientState.LocalPlayer.Level.ToString();
+                    replacement = DalamudApi.ObjectTable.LocalPlayer.Level.ToString();
                     break;
             }
 
