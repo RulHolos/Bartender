@@ -1,6 +1,6 @@
 using Dalamud.Game.ClientState.Objects.Enums;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
@@ -114,7 +114,7 @@ public class PetCondition : ICondition
     public string ID => "pe";
     public string ConditionName => "Pet Is Out";
     public int DisplayPriority => 0;
-    public unsafe bool Check(dynamic arg) => Framework.Instance()->GetUIModule()->GetPronounModule()->ResolvePlaceholder("<pet>", 0, 0) != null;
+    public unsafe bool Check(dynamic arg) => PronounModule.Instance()->ResolvePlaceholder("<pet>", 0, 0) != null;
 }
 
 [MiscCondition]
